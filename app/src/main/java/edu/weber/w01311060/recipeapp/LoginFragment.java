@@ -19,13 +19,24 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,6 +57,11 @@ public class LoginFragment extends Fragment
     private String mParam2;
 
     private FirebaseAuth mAuth;
+    private static final int REQ_ONE_TAP = 2;
+    private boolean showOneTapUI = true;
+    private static final String TAG = "GoogleActivity";
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient mGoogleSignInClient;
 
     public LoginFragment()
     {
@@ -80,8 +96,26 @@ public class LoginFragment extends Fragment
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        createSignInIntent();
 
+    }
+
+    private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
+            new FirebaseAuthUIActivityResultContract(),
+            new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>()
+            {
+                @Override
+                public void onActivityResult(FirebaseAuthUIAuthenticationResult result)
+                {
+                    onSignInResult(result);
+                }
+            }
+    );
+
+    public void createSignInIntent()
+    {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build());
 
         Intent signInIntent = AuthUI.getInstance()
@@ -91,30 +125,75 @@ public class LoginFragment extends Fragment
         signInLauncher.launch(signInIntent);
     }
 
-
-        private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
-            new FirebaseAuthUIActivityResultContract(),
-            new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
-                @Override
-                public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
-                    onSignInResult(result);
-                }
-            }
-    );
-
-    private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
+    private void onSignInResult(FirebaseAuthUIAuthenticationResult result)
+    {
         IdpResponse response = result.getIdpResponse();
-        if (result.getResultCode() == Activity.RESULT_OK) {
-            // Successfully signed in
+        if(result.getResultCode() == Activity.RESULT_OK)
+        {
+            //successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            Log.d("Firebase", "User signed in: " + user.toString());
-            // ...
-        } else {
-            // Sign in failed. If response is null the user canceled the
-            // sign-in flow using the back button. Otherwise check
-            // response.getError().getErrorCode() and handle the error.
-            // ...
         }
+        else
+        {
+            //Sign in failed. If response is null the user canceled the signin flow
+            //using the back button. Otherwise check response.getError().getErrorCode()
+            //and handle the error
+        }
+    }
+
+    public void signOut()
+    {
+        AuthUI.getInstance()
+                .signOut(getContext())
+                .addOnCompleteListener(new OnCompleteListener<Void>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        //do something
+                    }
+                });
+    }
+
+    public void delete()
+    {
+        AuthUI.getInstance()
+                .delete(getContext())
+                .addOnCompleteListener(new OnCompleteListener<Void>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        //do something
+                    }
+                });
+    }
+
+//    public void themeAndLogo()
+//    {
+//        List<AuthUI.IdpConfig> providers = Collections.emptyList();
+//
+//        Intent signInIntent = AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .setLogo(R.drawable.myLogo)
+//                .setTheme(R.style.myTheme)
+//                .build();
+//        signInLauncher.launch(signInIntent);
+//    }
+
+    public void privacyAndTerms()
+    {
+        List<AuthUI.IdpConfig> providers = Collections.emptyList();
+
+        Intent signInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTosAndPrivacyPolicyUrls(
+                        "https://example.com/terms.html",
+                        "https://example.com/privacy.html")
+                .build();
+        signInLauncher.launch(signInIntent);
     }
 
     @Override

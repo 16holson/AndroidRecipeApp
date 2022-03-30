@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "142825083791",
+    "project_id": "recipeapp-7221a",
+    "storage_bucket": "recipeapp-7221a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142825083791:android:e88334743f125a9712f1fa",
+        "android_client_info": {
+          "package_name": "edu.weber.w01311060.recipeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142825083791-b2u1abf3hqm5qeunsp9tlnqe4kp6h2r7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMcxBEYLDF7Gdt0p4qxDPUvJVeTixyCwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142825083791-b2u1abf3hqm5qeunsp9tlnqe4kp6h2r7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

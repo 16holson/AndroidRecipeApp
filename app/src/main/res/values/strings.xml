@@ -2,4 +2,8 @@
     <string name="app_name">RecipeAppOlson</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="grocery_list">Grocery List</string>
+    <string name="recipes">Recipes</string>
+    <string name="favorites">Favorites</string>
+    <string name="account">Account</string>
 </resources>

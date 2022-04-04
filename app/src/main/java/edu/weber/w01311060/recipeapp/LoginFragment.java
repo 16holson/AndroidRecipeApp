@@ -62,10 +62,30 @@ public class LoginFragment extends Fragment
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
+    private onLoginListener mCallBack;
 
     public LoginFragment()
     {
         // Required empty public constructor
+    }
+
+    public interface onLoginListener
+    {
+        void onLogin(FirebaseUser user);
+    }
+
+    @Override
+    public void onAttach(@NonNull Activity activity)
+    {
+        super.onAttach(activity);
+        try
+        {
+            mCallBack = (onLoginListener) activity;
+        }
+        catch (ClassCastException e)
+        {
+            throw new ClassCastException(activity.toString() + "must implement onLoginListener");
+        }
     }
 
     /**
@@ -132,6 +152,7 @@ public class LoginFragment extends Fragment
         {
             //successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            mCallBack.onLogin(user);
         }
         else
         {
@@ -168,19 +189,6 @@ public class LoginFragment extends Fragment
                     }
                 });
     }
-
-//    public void themeAndLogo()
-//    {
-//        List<AuthUI.IdpConfig> providers = Collections.emptyList();
-//
-//        Intent signInIntent = AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setLogo(R.drawable.myLogo)
-//                .setTheme(R.style.myTheme)
-//                .build();
-//        signInLauncher.launch(signInIntent);
-//    }
 
     public void privacyAndTerms()
     {

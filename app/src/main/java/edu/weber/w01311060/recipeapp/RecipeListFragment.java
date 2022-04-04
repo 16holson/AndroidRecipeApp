@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -93,23 +94,16 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     public void onResume()
     {
         super.onResume();
-        recipeBtn = root.findViewById(R.id.recipeBtn);
-        recipeBtn.setOnClickListener(new View.OnClickListener()
+
+        RecipeViewModel vm = new ViewModelProvider(this)
+                .get(RecipeViewModel.class);
+
+        if(vm.tableEmpty(getContext()))
         {
-            @Override
-            public void onClick(View view)
-            {
-//                for(int i = 0; i < categories.length; i++)
-//                {
-//                    ContextCategory param = new ContextCategory(getContext(), categories[i]);
-//                    GetRecipeListTask task = new GetRecipeListTask();
-//                    task.execute(param);
-//                }
-                ContextCategory param = new ContextCategory(getContext(), "Seafood");
-                GetRecipeListTask task = new GetRecipeListTask();
-                task.execute(param);
-            }
-        });
+            Log.d("Task", "Database is empty");
+            loadRecipes();
+        }
+
         rv = root.findViewById(R.id.recipeRecycleView);
         RecipeRecyclerAdapter adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
 
@@ -120,8 +114,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             rv.setHasFixedSize(false);
         }
 
-        RecipeViewModel vm = new ViewModelProvider(this)
-                .get(RecipeViewModel.class);
+
         vm.getAllRecipes(getContext())
                 .observe(this, new Observer<List<Recipe>>()
                 {
@@ -142,5 +135,16 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         RecipeDialog dialog = new RecipeDialog();
         dialog.show(getParentFragmentManager(), "RecipeDialog");
         //Save course to viewholder so that the dialog can use it
+    }
+
+    private void loadRecipes()
+    {
+        Log.d("Task", "loadRecipes");
+        for(int i = 0; i < categories.length; i++)
+        {
+            ContextCategory param = new ContextCategory(getContext(), categories[i]);
+            GetRecipeListTask task = new GetRecipeListTask();
+            task.execute(param);
+        }
     }
 }

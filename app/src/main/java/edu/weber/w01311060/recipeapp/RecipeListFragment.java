@@ -1,8 +1,12 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -12,10 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SearchView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -45,6 +52,8 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     private View root;
     private RecyclerView rv;
     private Button recipeBtn;
+    private RecipeViewModel vm;
+    private RecipeRecyclerAdapter adapter;
     private String[] categories = new String[]{"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
 
     public RecipeListFragment()
@@ -80,6 +89,10 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
+        vm = new ViewModelProvider(this)
+                .get(RecipeViewModel.class);
+        adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
     }
 
     @Override
@@ -95,17 +108,22 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     {
         super.onResume();
 
-        RecipeViewModel vm = new ViewModelProvider(this)
-                .get(RecipeViewModel.class);
+        Toolbar toolbar = root.findViewById(R.id.recipeListToolbar);
+        toolbar.setTitle("Recipes");
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        if(vm.tableEmpty(getContext()))
+        recipeBtn = root.findViewById(R.id.loadBtn);
+        recipeBtn.setOnClickListener(new View.OnClickListener()
         {
-            Log.d("Task", "Database is empty");
-            loadRecipes();
-        }
+            @Override
+            public void onClick(View view)
+            {
+                loadRecipes();
+            }
+        });
 
         rv = root.findViewById(R.id.recipeRecycleView);
-        RecipeRecyclerAdapter adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
+
 
         if(rv instanceof RecyclerView)
         {
@@ -130,6 +148,48 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.recipelist, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.recipeSearch).getActionView();
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String s)
+            {
+                searchRecipes(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s)
+            {
+                searchRecipes(s);
+                return false;
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.filterRecipes:
+                //open filter dialog
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onRecipeClick(Recipe recipe)
     {
         RecipeDialog dialog = new RecipeDialog();
@@ -146,5 +206,23 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             GetRecipeListTask task = new GetRecipeListTask();
             task.execute(param);
         }
+    }
+    private void searchRecipes(String query)
+    {
+        query = "%" + query + "%";
+
+        vm.searchRecipes(query, getContext())
+                .observe(this, new Observer<List<Recipe>>()
+                {
+                    @Override
+                    public void onChanged(List<Recipe> recipes)
+                    {
+                        if(recipes != null)
+                        {
+                            adapter.clear();
+                            adapter.addItems(recipes);
+                        }
+                    }
+                });
     }
 }

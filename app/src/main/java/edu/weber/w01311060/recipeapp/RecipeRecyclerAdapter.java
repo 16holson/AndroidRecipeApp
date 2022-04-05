@@ -92,5 +92,11 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
         values.addAll(recipes);
         notifyDataSetChanged();
     }
+    public void clear()
+    {
+        int size = values.size();
+        values.clear();
+        notifyItemRangeRemoved(0, size);
+    }
 
 }

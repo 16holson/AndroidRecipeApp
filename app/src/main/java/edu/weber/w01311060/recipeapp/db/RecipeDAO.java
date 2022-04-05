@@ -19,13 +19,13 @@ public interface RecipeDAO
     LiveData<List<Recipe>> getAll();
 
     @Query("SELECT * FROM Recipe ORDER BY _id LIMIT 1")
-    LiveData<Recipe> getLastRecipe();
+    Recipe getLastRecipe();
 
     @Query("SELECT * FROM Recipe WHERE idMeal = :id")
     Recipe findRecipeById(int id);
 
-    @Query("SELECT * FROM Recipe WHERE strMeal = :strMeal")
-    Recipe findRecipeByName(int strMeal);
+    @Query("SELECT * FROM Recipe WHERE strMeal LIKE :strMeal")
+    LiveData<List<Recipe>> findRecipeByName(String strMeal);
 
     @Delete
     void deleteRecipe(Recipe recipe);

@@ -13,7 +13,7 @@ import edu.weber.w01311060.recipeapp.models.Recipe;
 public class RecipeViewModel extends ViewModel
 {
     private LiveData<List<Recipe>> recipeList;
-    private LiveData<Recipe> recipe;
+    private Recipe recipe;
 
     public LiveData<List<Recipe>> getAllRecipes(Context context)
     {
@@ -24,10 +24,26 @@ public class RecipeViewModel extends ViewModel
         return recipeList;
     }
 
+    public LiveData<List<Recipe>> searchRecipes(String query, Context context)
+    {
+        recipeList = AppDatabase.getInstance(context).getRecipeDao().findRecipeByName(query);
+        return recipeList;
+    }
+
     public boolean tableEmpty(Context context)
     {
-        recipe = AppDatabase.getInstance(context).getRecipeDao().getLastRecipe();
-        if(recipe.getValue() == null)
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                recipe = AppDatabase.getInstance(context)
+                        .getRecipeDao()
+                        .getLastRecipe();
+            }
+        }).start();
+
+        if(recipe == null)
         {
             return true;
         }

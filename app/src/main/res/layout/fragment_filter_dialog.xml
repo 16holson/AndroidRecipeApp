@@ -1,14 +1,317 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".FilterDialog">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/filterToolbar"
+        android:elevation="4dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/category"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:singleLine="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/beef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Beef" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chicken"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Chicken" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/Dessert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Dessert" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/lamb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Lamb" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/miscellaneous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Miscellaneous" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/pasta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Pasta" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/seafood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Seafood" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/side"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Side" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/starter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Starter" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/vegan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Vegan" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/vegetarian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="vegetarian" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/breakfast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Breakfast" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/goat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Goat" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Area"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:singleLine="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/american"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="American" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/british"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="British" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/canadian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Canadian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chinese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Chinese" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/croatian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Croatian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dutch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Dutch" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/egyptian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Egyptain" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/french"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="French" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/greek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Greek" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/indian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Indian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/irish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Irish" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/italian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Italian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/jamaican"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Jamaican" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/japanese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Japanese" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/kenyan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Kenyan" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/malaysian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Malaysian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/mexican"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Mexican" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/moroccan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Moroccan" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/polish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Polish" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/portuguese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Portuguese" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/russian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Russian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/spanish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Spanish" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/thai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Thai" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/tunisian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Tunisian" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/turkish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Turkish" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/unknown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Unknown" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/vietnamese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Vietnamese" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+</LinearLayout>

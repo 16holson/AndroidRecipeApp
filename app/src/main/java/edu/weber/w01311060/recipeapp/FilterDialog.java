@@ -2,6 +2,10 @@ package edu.weber.w01311060.recipeapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -13,7 +17,7 @@ import android.view.ViewGroup;
  * Use the {@link FilterDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FilterDialog extends Fragment
+public class FilterDialog extends DialogFragment
 {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -24,6 +28,7 @@ public class FilterDialog extends Fragment
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private View root;
 
     public FilterDialog()
     {
@@ -58,6 +63,21 @@ public class FilterDialog extends Fragment
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_FullScreen);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        requireDialog().getWindow().setWindowAnimations(R.style.AppTheme_DialogAnimation);
+
+        Toolbar toolbar = root.findViewById(R.id.filterToolbar);
+        toolbar.setTitle("Filter Recipes");
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
+
     }
 
     @Override
@@ -65,6 +85,6 @@ public class FilterDialog extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filter_dialog, container, false);
+        return root = inflater.inflate(R.layout.fragment_filter_dialog, container, false);
     }
 }

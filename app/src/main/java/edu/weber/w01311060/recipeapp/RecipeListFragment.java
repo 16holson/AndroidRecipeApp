@@ -182,7 +182,8 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         switch (item.getItemId())
         {
             case R.id.filterRecipes:
-                //open filter dialog
+                FilterDialog fd = new FilterDialog();
+                fd.show(getParentFragmentManager(), "FilterDialog");
                 return true;
         }
 

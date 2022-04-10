@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
     public void onLogin(FirebaseUser user)
     {
         this.user = user;
+        Log.d("Login", "user: " + user.getEmail());
         bottomNavigationView.setSelectedItemId(R.id.recipes);
         fm.beginTransaction()
                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")

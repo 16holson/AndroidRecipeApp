@@ -4,12 +4,16 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -98,6 +102,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
 
         Toolbar toolbar = root.findViewById(R.id.recipeToolbar);
         toolbar.setTitle(recipe.getStrMeal());
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
         toolbar.setNavigationOnClickListener(new View.OnClickListener()
         {
@@ -107,6 +112,42 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                 dismiss();
             }
         });
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.recipemenu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.recipeFavorite:
+                    if(item.getTitle() == getString(R.string.favorite))
+                    {
+                        //favorite recipe
+                        item.setIcon(R.drawable.ic_baseline_favorite_24);
+                        item.setTitle(R.string.favorited);
+                    }
+                    else
+                    {
+//                        unfavorite recipe
+                        item.setIcon(R.drawable.ic_baseline_favorite_border_24);
+                        item.setTitle(R.string.favorite);
+                    }
+
+
+
+
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void setRecipe(Recipe recipe)

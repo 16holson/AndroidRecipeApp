@@ -111,12 +111,20 @@ public class LoginFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        createSignInIntent();
+        getActivity().setContentView(R.layout.fragment_login);
+
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+
+
+        // Create and launch sign-in intent
+        Intent signInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build();
+        signInLauncher.launch(signInIntent);
 
     }
 
@@ -132,21 +140,23 @@ public class LoginFragment extends Fragment
             }
     );
 
-    public void createSignInIntent()
-    {
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build(),
-                new AuthUI.IdpConfig.GoogleBuilder().build());
-
-        Intent signInIntent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build();
-        signInLauncher.launch(signInIntent);
-    }
+//    public void createSignInIntent()
+//    {
+//        List<AuthUI.IdpConfig> providers = Arrays.asList(
+//                new AuthUI.IdpConfig.EmailBuilder().build(),
+//                new AuthUI.IdpConfig.GoogleBuilder().build());
+//
+//        Intent signInIntent = AuthUI.getInstance()
+//                .createSignInIntentBuilder()
+//                .setAvailableProviders(providers)
+//                .build();
+//        signInLauncher.launch(signInIntent);
+//    }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result)
     {
+        Log.d("Login", "In onSignInResult: " + result.getResultCode());
+        Log.d("Login", "Result_Ok: " + Activity.RESULT_OK);
         IdpResponse response = result.getIdpResponse();
         if(result.getResultCode() == Activity.RESULT_OK)
         {

@@ -11,4 +11,6 @@
     <string name="category">Category</string>
     <string name="instructions">Instructions</string>
     <string name="ingredients">Ingredients</string>
+    <string name="favorite">Favorite</string>
+    <string name="favorited">Favorited</string>
 </resources>

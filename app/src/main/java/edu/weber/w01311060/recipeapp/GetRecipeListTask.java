@@ -70,6 +70,10 @@ public class GetRecipeListTask extends AsyncTask<ContextCategory, Integer, Strin
         json = json.replace("{\"meals\":", "");
         json = json.replace("]}", "]");
         Recipe[] recipes = jsonParse(json);
+        for (int i = 0; i < recipes.length; i++)
+        {
+            recipes[i].setCategory(category);
+        }
         new Thread(new Runnable()
         {
             @Override

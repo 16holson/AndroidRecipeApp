@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class RecipeDetails
 {
-    public RecipeDetails(int idMeal, String category, String area, String instructions, String strMeal, HashMap<String, String> ingredients)
+    public RecipeDetails(int idMeal, String category, String area, String instructions, String strMeal, ArrayList<String> ingredients)
     {
         this.idMeal = idMeal;
         this.category = category;
@@ -15,12 +15,17 @@ public class RecipeDetails
         this.ingredients = ingredients;
     }
 
+    public RecipeDetails()
+    {
+
+    }
+
     private int idMeal;
     private String category;
     private String area;
     private String instructions;
     private String strMeal;
-    private HashMap<String, String> ingredients; //ingredient/measurement
+    private ArrayList<String> ingredients; //ingredient/measurement
 
     public int getIdMeal()
     {
@@ -72,12 +77,12 @@ public class RecipeDetails
         this.strMeal = strMeal;
     }
 
-    public HashMap<String, String> getIngredients()
+    public ArrayList<String> getIngredients()
     {
         return ingredients;
     }
 
-    public void setIngredients(HashMap<String, String> ingredients)
+    public void setIngredients(ArrayList<String> ingredients)
     {
         this.ingredients = ingredients;
     }

@@ -23,6 +23,8 @@ public class Recipe
     private int idMeal;
     @ColumnInfo
     private String strMeal;
+    @ColumnInfo
+    private String category;
 
     public int get_id()
     {
@@ -52,5 +54,15 @@ public class Recipe
     public void setStrMeal(String strMeal)
     {
         this.strMeal = strMeal;
+    }
+
+    public String getCategory()
+    {
+        return category;
+    }
+
+    public void setCategory(String category)
+    {
+        this.category = category;
     }
 }

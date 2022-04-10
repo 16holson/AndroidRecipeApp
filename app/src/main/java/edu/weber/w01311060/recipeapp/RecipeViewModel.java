@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import java.util.List;
 
@@ -29,6 +30,12 @@ public class RecipeViewModel extends ViewModel
         recipeList = AppDatabase.getInstance(context).getRecipeDao().findRecipeByName(query);
         return recipeList;
     }
+    public LiveData<List<Recipe>> filterRecipes(SupportSQLiteQuery query, Context context)
+    {
+        recipeList = AppDatabase.getInstance(context).getRecipeDao().filterRecipes(query);
+        return recipeList;
+    }
+
 
     public boolean tableEmpty(Context context)
     {

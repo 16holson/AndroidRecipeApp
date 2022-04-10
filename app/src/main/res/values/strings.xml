@@ -9,4 +9,6 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="category">Category</string>
+    <string name="instructions">Instructions</string>
+    <string name="ingredients">Ingredients</string>
 </resources>

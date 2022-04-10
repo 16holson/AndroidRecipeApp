@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ import edu.weber.w01311060.recipeapp.models.Recipe;
  * Use the {@link RecipeListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapter.onRecipeListener
+public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapter.onRecipeListener, FilterDialog.OnFilterListener
 {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -184,6 +185,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             case R.id.filterRecipes:
                 FilterDialog fd = new FilterDialog();
                 fd.show(getParentFragmentManager(), "FilterDialog");
+                fd.setTargetFragment(RecipeListFragment.this, 1);
                 return true;
         }
 
@@ -195,7 +197,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     {
         RecipeDialog dialog = new RecipeDialog();
         dialog.show(getParentFragmentManager(), "RecipeDialog");
-        //Save course to viewholder so that the dialog can use it
+        dialog.setRecipe(recipe);
     }
 
     private void loadRecipes()
@@ -225,5 +227,45 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onFilter(List<String> categories)
+    {
+        //search recipes
+
+        StringBuilder builder = new StringBuilder(" SELECT * FROM Recipe ");
+        if (categories.size() > 0)
+        {
+            builder.append(" WHERE category IN (");
+        }
+        for (int i = 0; i < categories.size(); i++)
+        {
+            if (i != categories.size() - 1)
+            {
+                builder.append("?, ");
+            }
+            else
+            {
+                builder.append("?)");
+            }
+        }
+
+        SimpleSQLiteQuery query = new SimpleSQLiteQuery(builder.toString(), categories.toArray());
+
+        vm.filterRecipes(query, getContext())
+                .observe(this, new Observer<List<Recipe>>()
+                {
+                    @Override
+                    public void onChanged(List<Recipe> recipes)
+                    {
+                        if(recipes != null)
+                        {
+                            adapter.clear();
+                            adapter.addItems(recipes);
+                        }
+                    }
+                });
+
     }
 }

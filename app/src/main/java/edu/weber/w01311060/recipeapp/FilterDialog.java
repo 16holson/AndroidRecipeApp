@@ -1,16 +1,28 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,10 +41,32 @@ public class FilterDialog extends DialogFragment
     private String mParam1;
     private String mParam2;
     private View root;
+    private ChipGroup group;
+    private List<String> categoryList;
+    private OnFilterListener mCallback;
 
     public FilterDialog()
     {
         // Required empty public constructor
+    }
+
+    public interface OnFilterListener
+    {
+        public void onFilter(List<String> categories);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        try
+        {
+            mCallback = (OnFilterListener) getTargetFragment();
+        }
+        catch (ClassCastException e)
+        {
+            Log.d("FilterDialog", "ClassCastException: " + e.getMessage());
+        }
+        super.onAttach(context);
     }
 
     /**
@@ -76,8 +110,23 @@ public class FilterDialog extends DialogFragment
 
         Toolbar toolbar = root.findViewById(R.id.filterToolbar);
         toolbar.setTitle("Filter Recipes");
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                dismiss();
+            }
+        });
+    }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        group = root.findViewById(R.id.categoryGroup);
     }
 
     @Override
@@ -87,4 +136,37 @@ public class FilterDialog extends DialogFragment
         // Inflate the layout for this fragment
         return root = inflater.inflate(R.layout.fragment_filter_dialog, container, false);
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.filtermenu, menu);
+        menu.findItem(R.id.recipeSearch).setVisible(false);
+        menu.findItem(R.id.filterRecipes).setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.saveFilter:
+                List<Integer> ids = group.getCheckedChipIds();
+                categoryList = new ArrayList<String>();
+                for (int i = 0; i < ids.size(); i++)
+                {
+                    Chip chip = root.findViewById(ids.get(i));
+                    categoryList.add(chip.getText().toString());
+                }
+                mCallback.onFilter(categoryList);
+                dismiss();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
+
+
 }

@@ -64,9 +64,9 @@ public class User
         return recipeIds;
     }
 
-    public void addRecipeId(String recipeId)
+    public void addRecipeId(String recipeName, String recipeId)
     {
-        this.recipeIds.put(String.valueOf(iterator), recipeId);
+        this.recipeIds.put(recipeName, recipeId);
         iterator++;
     }
     public void removeRecipeId(String key)

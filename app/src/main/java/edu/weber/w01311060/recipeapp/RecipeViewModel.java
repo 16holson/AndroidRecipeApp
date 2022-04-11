@@ -7,6 +7,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
 
 import edu.weber.w01311060.recipeapp.db.AppDatabase;
@@ -66,6 +69,10 @@ public class RecipeViewModel extends ViewModel
     public void setUser(User user)
     {
         this.user.setValue(user);
+        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
+        DatabaseReference reference = rootNode.getReference("users");
+
+        reference.child(user.getUid()).setValue(user);
     }
     public LiveData<User> getUser()
     {

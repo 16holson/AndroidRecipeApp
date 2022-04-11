@@ -134,8 +134,6 @@ public class LoginFragment extends Fragment
                 .build();
         signInLauncher.launch(signInIntent);
 
-
-
     }
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -174,10 +172,10 @@ public class LoginFragment extends Fragment
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             User newUser = new User(user.getDisplayName(), user.getEmail(), user.getUid());
 
-            rootNode = FirebaseDatabase.getInstance();
-            reference = rootNode.getReference("users");
-
-            reference.child(newUser.getUid()).setValue(newUser);
+//            rootNode = FirebaseDatabase.getInstance();
+//            reference = rootNode.getReference("users");
+//
+//            reference.child(newUser.getUid()).setValue(newUser);
             vm.setUser(newUser);
             mCallBack.onLogin(newUser);
         }

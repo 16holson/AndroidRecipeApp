@@ -1,5 +1,7 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +12,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,6 +62,8 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
     private DatabaseReference myRef;
     private RecipeViewModel vm;
     private User newUser;
+    private boolean favorited = false;
+    private Toolbar toolbar;
 
     public RecipeDialog()
     {
@@ -119,13 +122,22 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    public void onPause()
     {
-        super.onViewCreated(view, savedInstanceState);
+        super.onPause();
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEdit = prefs.edit();
+        prefEdit.putBoolean("fav", favorited);
+        prefEdit.commit();
+    }
 
-        requireDialog().getWindow().setWindowAnimations(R.style.AppTheme_DialogAnimation);
-
-        Toolbar toolbar = root.findViewById(R.id.recipeToolbar);
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        favorited = prefs.getBoolean("fav", false);
+        toolbar = root.findViewById(R.id.recipeToolbar);
         toolbar.setTitle(recipe.getStrMeal());
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
@@ -137,6 +149,14 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                 dismiss();
             }
         });
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        requireDialog().getWindow().setWindowAnimations(R.style.AppTheme_DialogAnimation);
 
     }
 
@@ -146,6 +166,17 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         inflater.inflate(R.menu.recipemenu, menu);
+        MenuItem item = menu.findItem(R.id.recipeFavorite);
+        if (newUser.getRecipeIds().containsValue(String.valueOf(recipe.getIdMeal())))
+        {
+            item.setIcon(R.drawable.ic_baseline_favorite_24);
+            item.setTitle(R.string.favorited);
+        }
+        else
+        {
+            item.setIcon(R.drawable.ic_baseline_favorite_border_24);
+            item.setTitle(R.string.favorite);
+        }
     }
 
     @Override
@@ -156,14 +187,14 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
             case R.id.recipeFavorite:
                 database = FirebaseDatabase.getInstance();
                 myRef = database.getReference("users");
-                RecipeViewModel vm = new RecipeViewModel();
                     if(item.getTitle() == getString(R.string.favorite))
                     {
                         //favorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_24);
                         item.setTitle(R.string.favorited);
-                        newUser.addRecipeId(String.valueOf(recipe.getIdMeal()));
+                        newUser.addRecipeId(recipe.getStrMeal(),String.valueOf(recipe.getIdMeal()));
                         vm.setUser(newUser);
+                        favorited = true;
                         Log.d("Fav", "user: " + newUser.toString());
                         //update database
                     }
@@ -172,15 +203,9 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
 //                      unfavorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_border_24);
                         item.setTitle(R.string.favorite);
-                        newUser.getRecipeIds();
-                        for (Map.Entry<String, String> entry : newUser.getRecipeIds().entrySet())
-                        {
-                            if(entry.getValue().equals(String.valueOf(recipe.getIdMeal())))
-                            {
-                                newUser.removeRecipeId(entry.getKey());
-                            }
-                        }
+                        newUser.getRecipeIds().remove(recipe.getStrMeal());
                         vm.setUser(newUser);
+                        favorited = false;
                         Log.d("Fav", "user: " + newUser.toString());
                         //update database
                     }

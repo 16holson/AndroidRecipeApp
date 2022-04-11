@@ -20,6 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import edu.weber.w01311060.recipeapp.models.Recipe;
 import edu.weber.w01311060.recipeapp.models.RecipeDetails;
 
@@ -47,6 +50,8 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
     private ListView ingredientList;
     private ArrayAdapter instructionsAdapter;
     private ArrayAdapter ingredientsAdapter;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     public RecipeDialog()
     {
@@ -83,6 +88,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
         }
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_FullScreen);
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -129,6 +135,8 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
         switch (item.getItemId())
         {
             case R.id.recipeFavorite:
+                database = FirebaseDatabase.getInstance();
+                myRef = database.getReference("users");
                     if(item.getTitle() == getString(R.string.favorite))
                     {
                         //favorite recipe
@@ -137,7 +145,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                     }
                     else
                     {
-//                        unfavorite recipe
+//                      unfavorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_border_24);
                         item.setTitle(R.string.favorite);
                     }

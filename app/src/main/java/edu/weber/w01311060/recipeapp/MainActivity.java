@@ -12,10 +12,12 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseUser;
 
+import edu.weber.w01311060.recipeapp.models.User;
+
 public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener
 {
     private FragmentManager fm;
-    private FirebaseUser user;
+    private User user;
     private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -64,10 +66,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
 
 
     @Override
-    public void onLogin(FirebaseUser user)
+    public void onLogin(User user)
     {
         this.user = user;
-        Log.d("Login", "user: " + user.getEmail());
+        Log.d("Login", "user: " + user.getUser().getEmail());
         bottomNavigationView.setSelectedItemId(R.id.recipes);
         fm.beginTransaction()
                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")

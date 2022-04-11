@@ -33,11 +33,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import edu.weber.w01311060.recipeapp.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,6 +67,8 @@ public class LoginFragment extends Fragment
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private onLoginListener mCallBack;
+    private FirebaseDatabase rootNode;
+    private DatabaseReference reference;
 
     public LoginFragment()
     {
@@ -71,7 +77,7 @@ public class LoginFragment extends Fragment
 
     public interface onLoginListener
     {
-        void onLogin(FirebaseUser user);
+        void onLogin(User user);
     }
 
     @Override
@@ -162,7 +168,18 @@ public class LoginFragment extends Fragment
         {
             //successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            mCallBack.onLogin(user);
+            User newUser = new User(user);
+
+            rootNode = FirebaseDatabase.getInstance();
+            reference = rootNode.getReference("users");
+
+            newUser.addRecipeId("25");
+            newUser.addRecipeId("50");
+            newUser.addRecipeId("16");
+
+            reference.child(newUser.getUser().getUid()).setValue(newUser);
+
+            mCallBack.onLogin(newUser);
         }
         else
         {

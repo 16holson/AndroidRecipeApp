@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,6 +70,7 @@ public class LoginFragment extends Fragment
     private onLoginListener mCallBack;
     private FirebaseDatabase rootNode;
     private DatabaseReference reference;
+    private RecipeViewModel vm;
 
     public LoginFragment()
     {
@@ -132,6 +134,8 @@ public class LoginFragment extends Fragment
                 .build();
         signInLauncher.launch(signInIntent);
 
+
+
     }
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -168,17 +172,13 @@ public class LoginFragment extends Fragment
         {
             //successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            User newUser = new User(user);
+            User newUser = new User(user.getDisplayName(), user.getEmail(), user.getUid());
 
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference("users");
 
-            newUser.addRecipeId("25");
-            newUser.addRecipeId("50");
-            newUser.addRecipeId("16");
-
-            reference.child(newUser.getUser().getUid()).setValue(newUser);
-
+            reference.child(newUser.getUid()).setValue(newUser);
+            vm.setUser(newUser);
             mCallBack.onLogin(newUser);
         }
         else
@@ -235,6 +235,8 @@ public class LoginFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        vm = new ViewModelProvider(getActivity())
+                .get(RecipeViewModel.class);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false);
     }

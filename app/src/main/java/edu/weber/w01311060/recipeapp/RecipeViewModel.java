@@ -3,6 +3,7 @@ package edu.weber.w01311060.recipeapp;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
@@ -10,11 +11,13 @@ import java.util.List;
 
 import edu.weber.w01311060.recipeapp.db.AppDatabase;
 import edu.weber.w01311060.recipeapp.models.Recipe;
+import edu.weber.w01311060.recipeapp.models.User;
 
 public class RecipeViewModel extends ViewModel
 {
     private LiveData<List<Recipe>> recipeList;
     private Recipe recipe;
+    private MutableLiveData<User> user = new MutableLiveData<>();
 
     public LiveData<List<Recipe>> getAllRecipes(Context context)
     {
@@ -58,5 +61,14 @@ public class RecipeViewModel extends ViewModel
         {
             return false;
         }
+    }
+
+    public void setUser(User user)
+    {
+        this.user.setValue(user);
+    }
+    public LiveData<User> getUser()
+    {
+        return user;
     }
 }

@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,8 +26,12 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import edu.weber.w01311060.recipeapp.models.Recipe;
 import edu.weber.w01311060.recipeapp.models.RecipeDetails;
+import edu.weber.w01311060.recipeapp.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +59,8 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
     private ArrayAdapter ingredientsAdapter;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private RecipeViewModel vm;
+    private User newUser;
 
     public RecipeDialog()
     {
@@ -88,13 +97,23 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
         }
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_FullScreen);
         setHasOptionsMenu(true);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        vm = new ViewModelProvider(getActivity())
+                .get(RecipeViewModel.class);
+
+        vm.getUser().observe(getViewLifecycleOwner(), new Observer<User>()
+        {
+            @Override
+            public void onChanged(User user)
+            {
+                newUser = user;
+            }
+        });
         // Inflate the layout for this fragment
         return root = inflater.inflate(R.layout.fragment_recipe_dialog, container, false);
     }
@@ -137,17 +156,33 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
             case R.id.recipeFavorite:
                 database = FirebaseDatabase.getInstance();
                 myRef = database.getReference("users");
+                RecipeViewModel vm = new RecipeViewModel();
                     if(item.getTitle() == getString(R.string.favorite))
                     {
                         //favorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_24);
                         item.setTitle(R.string.favorited);
+                        newUser.addRecipeId(String.valueOf(recipe.getIdMeal()));
+                        vm.setUser(newUser);
+                        Log.d("Fav", "user: " + newUser.toString());
+                        //update database
                     }
                     else
                     {
 //                      unfavorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_border_24);
                         item.setTitle(R.string.favorite);
+                        newUser.getRecipeIds();
+                        for (Map.Entry<String, String> entry : newUser.getRecipeIds().entrySet())
+                        {
+                            if(entry.getValue().equals(String.valueOf(recipe.getIdMeal())))
+                            {
+                                newUser.removeRecipeId(entry.getKey());
+                            }
+                        }
+                        vm.setUser(newUser);
+                        Log.d("Fav", "user: " + newUser.toString());
+                        //update database
                     }
 
 

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseUser;
 
+import edu.weber.w01311060.recipeapp.models.RecipeList;
 import edu.weber.w01311060.recipeapp.models.User;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener
@@ -48,8 +49,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
                         return true;
                     case R.id.favorites:
                         Log.d("Main", "favorites");
+                        RecipeListFragment recipeListFragment = RecipeListFragment.newInstance(true);
                         fm.beginTransaction()
-                                .replace(R.id.fragmentContainerView, new FavoritesFragment(), "favoritesFrag")
+                                .replace(R.id.fragmentContainerView, recipeListFragment, "favoritesFrag")
                                 .commit();
                         return true;
                     case R.id.account:

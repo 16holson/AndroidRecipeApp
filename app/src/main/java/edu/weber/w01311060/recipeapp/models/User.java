@@ -74,6 +74,11 @@ public class User
         this.recipeIds.remove(key);
     }
 
+    public void setRecipeIds(Map<String, String> recipeIds)
+    {
+        this.recipeIds = recipeIds;
+    }
+
     @Override
     public String toString()
     {

@@ -34,13 +34,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import edu.weber.w01311060.recipeapp.models.User;
 
@@ -172,10 +176,38 @@ public class LoginFragment extends Fragment
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             User newUser = new User(user.getDisplayName(), user.getEmail(), user.getUid());
 
-//            rootNode = FirebaseDatabase.getInstance();
-//            reference = rootNode.getReference("users");
-//
-//            reference.child(newUser.getUid()).setValue(newUser);
+            rootNode = FirebaseDatabase.getInstance();
+            reference = rootNode.getReference("users");
+            reference.child(newUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot)
+                {
+                    for (DataSnapshot postSnapshot : snapshot.getChildren())
+                    {
+                        Log.d("Recipe", "class: " + postSnapshot.getValue().getClass());
+                        if (postSnapshot.getValue() instanceof Map)
+                        {
+                            Map<String, String> recipeIds = (Map) postSnapshot.getValue();
+                            if (recipeIds != null)
+                            {
+                                newUser.setRecipeIds(recipeIds);
+                                Log.d("Recipe", "Set recipeIds");
+                            }
+                        }
+
+
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error)
+                {
+
+                }
+            });
             vm.setUser(newUser);
             mCallBack.onLogin(newUser);
         }

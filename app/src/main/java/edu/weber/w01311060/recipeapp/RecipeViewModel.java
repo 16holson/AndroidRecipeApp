@@ -24,10 +24,7 @@ public class RecipeViewModel extends ViewModel
 
     public LiveData<List<Recipe>> getAllRecipes(Context context)
     {
-        if(recipeList == null)
-        {
-            recipeList = AppDatabase.getInstance(context).getRecipeDao().getAll();
-        }
+        recipeList = AppDatabase.getInstance(context).getRecipeDao().getAll();
         return recipeList;
     }
 

@@ -33,6 +33,7 @@ import java.util.List;
 import edu.weber.w01311060.recipeapp.db.AppDatabase;
 import edu.weber.w01311060.recipeapp.models.ContextCategory;
 import edu.weber.w01311060.recipeapp.models.Recipe;
+import edu.weber.w01311060.recipeapp.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,16 +46,15 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private boolean isFavorite;
     private View root;
     private RecyclerView rv;
     private Button recipeBtn;
     private RecipeViewModel vm;
     private RecipeRecyclerAdapter adapter;
+    private User newUser;
     private String[] categories = new String[]{"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
 
     public RecipeListFragment()
@@ -66,17 +66,14 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment RecipeListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RecipeListFragment newInstance(String param1, String param2)
+    public static RecipeListFragment newInstance(boolean favorite)
     {
         RecipeListFragment fragment = new RecipeListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(ARG_PARAM1, favorite);
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,13 +84,9 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            isFavorite = getArguments().getBoolean(ARG_PARAM1);
         }
         setHasOptionsMenu(true);
-        vm = new ViewModelProvider(this)
-                .get(RecipeViewModel.class);
-        adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
     }
 
     @Override
@@ -101,6 +94,9 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
+        vm = new ViewModelProvider(getActivity())
+                .get(RecipeViewModel.class);
+        adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
         return root = inflater.inflate(R.layout.fragment_recipe_list, container, false);
     }
 
@@ -133,19 +129,37 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             rv.setHasFixedSize(false);
         }
 
-
-        vm.getAllRecipes(getContext())
-                .observe(this, new Observer<List<Recipe>>()
+        if(isFavorite)
+        {
+            vm.getUser().observe(getViewLifecycleOwner(), new Observer<User>()
+            {
+                @Override
+                public void onChanged(User user)
                 {
-                    @Override
-                    public void onChanged(List<Recipe> recipes)
+                    newUser = user;
+                    if (!newUser.getRecipeIds().equals(null))
                     {
-                        if(recipes != null)
-                        {
-                            adapter.addItems(recipes);
-                        }
+                        onFavorite();
                     }
-                });
+                }
+            });
+        }
+        else
+        {
+            vm.getAllRecipes(getContext())
+                    .observe(this, new Observer<List<Recipe>>()
+                    {
+                        @Override
+                        public void onChanged(List<Recipe> recipes)
+                        {
+                            if(recipes != null)
+                            {
+                                adapter.clear();
+                                adapter.addItems(recipes);
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
@@ -267,5 +281,40 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                     }
                 });
 
+    }
+    public void onFavorite()
+    {
+        StringBuilder builder = new StringBuilder(" SELECT * FROM Recipe ");
+
+        if (!newUser.getRecipeIds().isEmpty())
+        {
+            builder.append(" WHERE idMeal IN (");
+        }
+        for(int i = 0; i < newUser.getRecipeIds().size(); i++)
+        {
+            if (i != newUser.getRecipeIds().size() - 1)
+            {
+                builder.append("?, ");
+            }
+            else
+            {
+                builder.append("?)");
+            }
+        }
+        SimpleSQLiteQuery query = new SimpleSQLiteQuery(builder.toString(), newUser.getRecipeIds().values().toArray());
+
+        vm.filterRecipes(query, getContext())
+                .observe(this, new Observer<List<Recipe>>()
+                {
+                    @Override
+                    public void onChanged(List<Recipe> recipes)
+                    {
+                        if(recipes != null)
+                        {
+                            adapter.clear();
+                            adapter.addItems(recipes);
+                        }
+                    }
+                });
     }
 }

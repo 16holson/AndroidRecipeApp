@@ -29,6 +29,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.weber.w01311060.recipeapp.db.AppDatabase;
 import edu.weber.w01311060.recipeapp.models.ContextCategory;
@@ -146,6 +147,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         }
         else
         {
+            vm.setFavorite(false);
             vm.getAllRecipes(getContext())
                     .observe(this, new Observer<List<Recipe>>()
                     {
@@ -249,9 +251,21 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         //search recipes
 
         StringBuilder builder = new StringBuilder(" SELECT * FROM Recipe ");
-        if (categories.size() > 0)
+        if (categories.size() > 0 && !isFavorite)
         {
             builder.append(" WHERE category IN (");
+        }
+        else
+        {
+            builder.append(" WHERE idMeal IN (");
+            for (Map.Entry<String, String> entry : newUser.getRecipeIds().entrySet())
+            {
+                builder.append(entry.getValue());
+                builder.append(" ,");
+            }
+            builder.deleteCharAt(builder.length()-1);
+            builder.deleteCharAt(builder.length()-1);
+            builder.append(") AND category IN (");
         }
         for (int i = 0; i < categories.size(); i++)
         {
@@ -264,7 +278,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                 builder.append("?)");
             }
         }
-
+        Log.d("Filter", builder.toString());
         SimpleSQLiteQuery query = new SimpleSQLiteQuery(builder.toString(), categories.toArray());
 
         vm.filterRecipes(query, getContext())
@@ -290,6 +304,10 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         {
             builder.append(" WHERE idMeal IN (");
         }
+        else
+        {
+            builder.append("WHERE idMeal = 'zzzzz'");
+        }
         for(int i = 0; i < newUser.getRecipeIds().size(); i++)
         {
             if (i != newUser.getRecipeIds().size() - 1)
@@ -302,7 +320,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             }
         }
         SimpleSQLiteQuery query = new SimpleSQLiteQuery(builder.toString(), newUser.getRecipeIds().values().toArray());
-
+        vm.setFavorite(true);
         vm.filterRecipes(query, getContext())
                 .observe(this, new Observer<List<Recipe>>()
                 {

@@ -183,23 +183,16 @@ public class LoginFragment extends Fragment
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
-                    for (DataSnapshot postSnapshot : snapshot.getChildren())
+                    if (snapshot.exists())
                     {
-                        Log.d("Recipe", "class: " + postSnapshot.getValue().getClass());
-                        if (postSnapshot.getValue() instanceof Map)
+                        Map<String, String> map = (Map<String, String>) snapshot.child("recipeIds").getValue();
+                        if (map != null)
                         {
-                            Map<String, String> recipeIds = (Map) postSnapshot.getValue();
-                            if (recipeIds != null)
-                            {
-                                newUser.setRecipeIds(recipeIds);
-                                Log.d("Recipe", "Set recipeIds");
-                            }
+                            newUser.setRecipeIds(map);
                         }
-
-
                     }
-
-
+                    vm.setUser(newUser);
+                    mCallBack.onLogin(newUser);
                 }
 
                 @Override
@@ -208,8 +201,39 @@ public class LoginFragment extends Fragment
 
                 }
             });
-            vm.setUser(newUser);
-            mCallBack.onLogin(newUser);
+
+//            Map<String, String> map = (Map<String, String>) reference.child(newUser.getUid()).get();
+//            newUser.setRecipeIds(map);
+//            reference.child(newUser.getUid()).addValueEventListener(new ValueEventListener()
+//            {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot)
+//                {
+//                    for (DataSnapshot postSnapshot : snapshot.getChildren())
+//                    {
+//                        Log.d("Recipe", "class: " + postSnapshot.getValue().getClass());
+//                        if (postSnapshot.getValue() instanceof Map)
+//                        {
+//                            Map<String, String> recipeIds = (Map) postSnapshot.getValue();
+//                            if (recipeIds != null)
+//                            {
+//                                newUser.setRecipeIds(recipeIds);
+//                                Log.d("Recipe", "Set recipeIds");
+//                            }
+//                        }
+//
+//
+//                    }
+//
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error)
+//                {
+//
+//                }
+//            });
         }
         else
         {

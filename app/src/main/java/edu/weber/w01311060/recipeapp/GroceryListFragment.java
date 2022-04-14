@@ -1,12 +1,25 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.net.wifi.aware.AwareResources;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
+import android.widget.ListView;
+
+import java.util.List;
+
+import edu.weber.w01311060.recipeapp.models.Ingredient;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +37,9 @@ public class GroceryListFragment extends Fragment
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private View root;
+    private ListView listView;
 
     public GroceryListFragment()
     {
@@ -58,6 +74,7 @@ public class GroceryListFragment extends Fragment
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -65,6 +82,69 @@ public class GroceryListFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_grocery_list, container, false);
+        return root = inflater.inflate(R.layout.fragment_grocery_list, container, false);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        listView = root.findViewById(R.id.groceryListView);
+
+
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                CheckedTextView v = (CheckedTextView) view;
+                boolean isChecked = v.isChecked();
+                Ingredient ingredient = (Ingredient) listView.getItemAtPosition(i);
+                ingredient.setActive(isChecked);
+            }
+        });
+        initListViewData();
+
+    }
+
+    public void initListViewData()
+    {
+        //get saved ingredients from firebase, check if there is nothing
+        Ingredient[] ingredients = new Ingredient[]{new Ingredient("Eggs"), new Ingredient("Milk"), new Ingredient("Potato"), new Ingredient("Lemon")};
+
+        ArrayAdapter<Ingredient> arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, ingredients);
+
+        listView.setAdapter(arrayAdapter);
+
+        for (int i = 0; i < ingredients.length; i++)
+        {
+            listView.setItemChecked(i, ingredients[i].isActive());
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.grocerymenu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.sync:
+                //pull up dialog asking for email of other person
+                return true;
+            case R.id.delete:
+                //pull up dialog asking if they want to delete selected items
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

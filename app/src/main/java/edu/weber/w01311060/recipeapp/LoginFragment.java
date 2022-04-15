@@ -186,9 +186,14 @@ public class LoginFragment extends Fragment
                     if (snapshot.exists())
                     {
                         Map<String, String> map = (Map<String, String>) snapshot.child("recipeIds").getValue();
+                        Map<String, String> map2 = (Map<String, String>) snapshot.child("groceryList").getValue();
                         if (map != null)
                         {
                             newUser.setRecipeIds(map);
+                        }
+                        if (map2 != null)
+                        {
+                            newUser.setGroceryList(map2);
                         }
                     }
                     vm.setUser(newUser);

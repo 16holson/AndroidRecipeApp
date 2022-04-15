@@ -135,7 +135,6 @@ public class RecipeViewModel extends ViewModel
         this.user.setValue(user);
         FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
         DatabaseReference reference = rootNode.getReference("users");
-
         reference.child(user.getUid()).setValue(user);
     }
     public LiveData<User> getUser()

@@ -13,7 +13,7 @@ public class User
     private String email;
     private String uid;
     private Map<String, String> recipeIds;
-    private int iterator;
+    private Map<String, String> groceryList;
 
     public User()
     {
@@ -26,7 +26,8 @@ public class User
         this.email = email;
         this.uid = uid;
         recipeIds = new HashMap<String, String>();
-        iterator = 1;
+        groceryList = new HashMap<String, String>();
+
     }
 
     public String getName()
@@ -67,7 +68,26 @@ public class User
     public void addRecipeId(String recipeName, String recipeId)
     {
         this.recipeIds.put(recipeName, recipeId);
-        iterator++;
+    }
+    public void addGroceryItem(String name, String value)
+    {
+        if (!groceryList.containsKey(name))
+        {
+            this.groceryList.put(name, value);
+        }
+
+    }
+    public Map<String, String> getGroceryList()
+    {
+        return groceryList;
+    }
+    public void removeGroceryItem(String key)
+    {
+        this.groceryList.remove(key);
+    }
+    public void setGroceryList(Map<String, String> groceryList)
+    {
+        this.groceryList = groceryList;
     }
     public void removeRecipeId(String key)
     {

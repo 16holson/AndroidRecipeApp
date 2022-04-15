@@ -1,6 +1,6 @@
 package edu.weber.w01311060.recipeapp.models;
 
-public class Ingredient
+public class Ingredient implements Comparable<Ingredient>
 {
     private String name;
     private boolean active;
@@ -29,5 +29,17 @@ public class Ingredient
     public void setActive(boolean active)
     {
         this.active = active;
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    @Override
+    public int compareTo(Ingredient i)
+    {
+        return Boolean.compare(this.active, i.active);
     }
 }

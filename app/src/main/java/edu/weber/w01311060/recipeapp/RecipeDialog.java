@@ -1,6 +1,8 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -20,9 +22,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -262,6 +266,42 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
         ingredientTitle.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Medium);
         instructionList.addHeaderView(instructionTitle);
         ingredientList.addHeaderView(ingredientTitle);
+
+        ingredientList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                //show dialog to save to grocery list
+                String[] item = ingredientList.getItemAtPosition(i).toString().split(" - ");
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Save Ingredient to Grocery List?")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                dialogInterface.cancel();
+                            }
+                        });
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        //save ingredient to database
+                        newUser.addGroceryItem(item[0], item[1]);
+                        vm.setUser(newUser);
+
+                        Toast toast = new Toast(getContext());
+                        toast.setText("Saved");
+                        toast.show();
+                    }
+                });
+                builder.show();
+            }
+        });
 
 
     }

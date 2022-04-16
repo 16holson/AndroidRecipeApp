@@ -199,19 +199,21 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                         newUser.addRecipeId(recipe.getStrMeal(),String.valueOf(recipe.getIdMeal()));
                         vm.setUser(newUser);
                         favorited = true;
-                        Log.d("Fav", "user: " + newUser.toString());
-                        //update database
+                        Toast toast = new Toast(getContext());
+                        toast.setText("Favorited");
+                        toast.show();
                     }
                     else
                     {
-//                      unfavorite recipe
+                        //unfavorite recipe
                         item.setIcon(R.drawable.ic_baseline_favorite_border_24);
                         item.setTitle(R.string.favorite);
                         newUser.getRecipeIds().remove(recipe.getStrMeal());
                         vm.setUser(newUser);
                         favorited = false;
-                        Log.d("Fav", "user: " + newUser.toString());
-                        //update database
+                        Toast toast = new Toast(getContext());
+                        toast.setText("Unfavorited");
+                        toast.show();
                     }
 
 
@@ -276,7 +278,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                 String[] item = ingredientList.getItemAtPosition(i).toString().split(" - ");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Save Ingredient to Grocery List?")
+                builder.setTitle("Add Ingredient to Grocery List?")
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                         {
                             @Override
@@ -285,17 +287,17 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                                 dialogInterface.cancel();
                             }
                         });
-                builder.setPositiveButton("Save", new DialogInterface.OnClickListener()
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
                         //save ingredient to database
-                        newUser.addGroceryItem(item[0], item[1]);
+                        newUser.addGroceryItem(item[0], false);
                         vm.setUser(newUser);
 
                         Toast toast = new Toast(getContext());
-                        toast.setText("Saved");
+                        toast.setText("Added");
                         toast.show();
                     }
                 });

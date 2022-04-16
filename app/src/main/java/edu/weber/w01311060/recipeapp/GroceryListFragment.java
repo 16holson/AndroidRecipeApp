@@ -65,11 +65,7 @@ public class GroceryListFragment extends Fragment
     private User newUser;
     private RecipeViewModel vm;
     private FloatingActionButton addBtn;
-    private Button allBtn;
-    private Button remainBtn;
     private ArrayAdapter<Ingredient> arrayAdapter;
-
-    private Ingredient[] ingredients;
 
     public GroceryListFragment()
     {
@@ -124,8 +120,9 @@ public class GroceryListFragment extends Fragment
             {
                 CheckedTextView v = (CheckedTextView) view;
                 boolean isChecked = v.isChecked();
-                Ingredient ingredient = (Ingredient) listView.getItemAtPosition(i);
-                ingredient.setActive(isChecked);
+                newUser.updateGroceryItem(((Ingredient)listView.getItemAtPosition(i)).getName(), isChecked);
+                vm.setUser(newUser);
+                initListViewData();
             }
         });
 
@@ -135,12 +132,10 @@ public class GroceryListFragment extends Fragment
             public void onChanged(User user)
             {
                 newUser = user;
-                ingredients = new Ingredient[newUser.getGroceryList().size()];
                 initListViewData();
             }
         });
 
-        // Inflate the layout for this fragment
         return root;
     }
 
@@ -154,8 +149,6 @@ public class GroceryListFragment extends Fragment
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         addBtn = root.findViewById(R.id.addGroceryItem);
-        allBtn = root.findViewById(R.id.allItems);
-        remainBtn = root.findViewById(R.id.remainingItems);
         addBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -165,7 +158,7 @@ public class GroceryListFragment extends Fragment
                 EditText input = new EditText(getActivity());
                 input.setBackground(null);
                 inputLayout.setPadding(getResources().getDimensionPixelOffset(R.dimen.dp_16), 0, getResources().getDimensionPixelOffset(R.dimen.dp_16), 0);
-                inputLayout.setHint("Ingredient");
+                inputLayout.setHelperText("Ingredient");
                 inputLayout.addView(input);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -180,39 +173,16 @@ public class GroceryListFragment extends Fragment
                                 dialogInterface.cancel();
                             }
                         })
-                                .setPositiveButton("Add", new DialogInterface.OnClickListener()
+                        .setPositiveButton("Add", new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                newUser.addGroceryItem(input.getText().toString(), "1");
+                                newUser.addGroceryItem(input.getText().toString(), false);
                                 vm.setUser(newUser);
                                 dialogInterface.dismiss();
                             }
                         }).show();
-            }
-        });
-        remainBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                ArrayList<Ingredient> arrayList = new ArrayList<Ingredient>(Arrays.asList(ingredients));
-                Collections.sort(arrayList);
-                //set checked on new listview based on arraylist
-                arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, arrayList);
-                listView.setAdapter(arrayAdapter);
-                remainBtn.setBackgroundColor(getResources().getColor(R.color.green));
-                allBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            }
-        });
-        allBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                remainBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                allBtn.setBackgroundColor(getResources().getColor(R.color.green));
             }
         });
 
@@ -220,23 +190,23 @@ public class GroceryListFragment extends Fragment
 
     public void initListViewData()
     {
-        //get saved ingredients from firebase, check if there is nothing
-        int j = 0;
-        for (Map.Entry<String, String> entry : newUser.getGroceryList().entrySet())
+        List<Ingredient> newIngredients = new ArrayList<Ingredient>();
+        for (Map.Entry<String, Boolean> entry : newUser.getGroceryList().entrySet())
         {
-            Ingredient ingredient = new Ingredient(entry.getKey());
-            ingredients[j] = ingredient;
-            j++;
+            newIngredients.add(new Ingredient(entry.getKey(), entry.getValue()));
         }
 
-        arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, ingredients);
-
+        Collections.sort(newIngredients);
+        arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, newIngredients);
         listView.setAdapter(arrayAdapter);
-
-        for (int i = 0; i < ingredients.length; i++)
+        for (int j = 0; j < listView.getCount(); j++)
         {
-            listView.setItemChecked(i, ingredients[i].isActive());
+            if (((Ingredient)listView.getItemAtPosition(j)).isActive())
+            {
+                listView.setItemChecked(j, true);
+            }
         }
+
     }
 
     @Override
@@ -254,6 +224,36 @@ public class GroceryListFragment extends Fragment
         {
             case R.id.sync:
                 //pull up dialog asking for email of other person
+                TextInputLayout inputLayout = new TextInputLayout(getActivity());
+                EditText input = new EditText(getActivity());
+                input.setBackground(null);
+                inputLayout.setPadding(getResources().getDimensionPixelOffset(R.dimen.dp_16), 0, getResources().getDimensionPixelOffset(R.dimen.dp_16), 0);
+                inputLayout.setHelperText("Ingredient");
+                inputLayout.addView(input);
+
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
+                builder2.setTitle("Sync List")
+                        .setMessage("Enter the email of the user you wish to sync to")
+                        .setView(inputLayout)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .setPositiveButton("Sync", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                //set user.sync to uid of wanted user
+                                newUser.setSync(input.getText().toString().replace(".", "").replace("#", "").replace("$", ""));
+                                vm.setUser(newUser);
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
                 return true;
             case R.id.delete:
                 //pull up dialog asking if they want to delete selected items

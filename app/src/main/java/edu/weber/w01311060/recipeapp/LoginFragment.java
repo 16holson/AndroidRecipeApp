@@ -174,11 +174,11 @@ public class LoginFragment extends Fragment
         {
             //successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            User newUser = new User(user.getDisplayName(), user.getEmail(), user.getUid());
+            User newUser = new User(user.getDisplayName(), user.getEmail().replace(".", "").replace("#", "").replace("$", ""), user.getUid());
 
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference("users");
-            reference.child(newUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+            reference.child(newUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
@@ -186,7 +186,8 @@ public class LoginFragment extends Fragment
                     if (snapshot.exists())
                     {
                         Map<String, String> map = (Map<String, String>) snapshot.child("recipeIds").getValue();
-                        Map<String, String> map2 = (Map<String, String>) snapshot.child("groceryList").getValue();
+                        Map<String, Boolean> map2 = (Map<String, Boolean>) snapshot.child("groceryList").getValue();
+                        String sync = (String)snapshot.child("sync").getValue();
                         if (map != null)
                         {
                             newUser.setRecipeIds(map);
@@ -194,6 +195,10 @@ public class LoginFragment extends Fragment
                         if (map2 != null)
                         {
                             newUser.setGroceryList(map2);
+                        }
+                        if (sync != null)
+                        {
+                            newUser.setSync(sync);
                         }
                     }
                     vm.setUser(newUser);
@@ -206,39 +211,6 @@ public class LoginFragment extends Fragment
 
                 }
             });
-
-//            Map<String, String> map = (Map<String, String>) reference.child(newUser.getUid()).get();
-//            newUser.setRecipeIds(map);
-//            reference.child(newUser.getUid()).addValueEventListener(new ValueEventListener()
-//            {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot)
-//                {
-//                    for (DataSnapshot postSnapshot : snapshot.getChildren())
-//                    {
-//                        Log.d("Recipe", "class: " + postSnapshot.getValue().getClass());
-//                        if (postSnapshot.getValue() instanceof Map)
-//                        {
-//                            Map<String, String> recipeIds = (Map) postSnapshot.getValue();
-//                            if (recipeIds != null)
-//                            {
-//                                newUser.setRecipeIds(recipeIds);
-//                                Log.d("Recipe", "Set recipeIds");
-//                            }
-//                        }
-//
-//
-//                    }
-//
-//
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error)
-//                {
-//
-//                }
-//            });
         }
         else
         {

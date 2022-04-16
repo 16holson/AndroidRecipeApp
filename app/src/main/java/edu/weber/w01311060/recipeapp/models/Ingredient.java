@@ -10,6 +10,11 @@ public class Ingredient implements Comparable<Ingredient>
         this.name = name;
         active = false;
     }
+    public Ingredient(String name, boolean active)
+    {
+        this.name = name;
+        this.active = active;
+    }
 
     public String getName()
     {

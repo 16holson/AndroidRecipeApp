@@ -41,30 +41,4 @@
         app:layout_constraintStart_toStartOf="parent">
 
     </ListView>
-
-    <Button
-        android:id="@+id/remainingItems"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/round_btn"
-        android:text="Button"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/allItems"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="1dp"
-        android:background="@drawable/anti_round_btn"
-        android:text="Button"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:layout_constraintBottom_toBottomOf="@+id/remainingItems"
-        app:layout_constraintEnd_toStartOf="@+id/remainingItems"
-        app:layout_constraintTop_toTopOf="@+id/remainingItems" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,8 +12,9 @@ public class User
     private String name;
     private String email;
     private String uid;
+    private String sync;
     private Map<String, String> recipeIds;
-    private Map<String, String> groceryList;
+    private Map<String, Boolean> groceryList;
 
     public User()
     {
@@ -26,7 +27,8 @@ public class User
         this.email = email;
         this.uid = uid;
         recipeIds = new HashMap<String, String>();
-        groceryList = new HashMap<String, String>();
+        groceryList = new HashMap<String, Boolean>();
+        sync = null;
 
     }
 
@@ -69,15 +71,22 @@ public class User
     {
         this.recipeIds.put(recipeName, recipeId);
     }
-    public void addGroceryItem(String name, String value)
+    public void addGroceryItem(String name, boolean checked)
     {
         if (!groceryList.containsKey(name))
         {
-            this.groceryList.put(name, value);
+            this.groceryList.put(name, checked);
         }
 
     }
-    public Map<String, String> getGroceryList()
+    public void updateGroceryItem(String name, boolean checked)
+    {
+        if (groceryList.containsKey(name))
+        {
+            this.groceryList.put(name, checked);
+        }
+    }
+    public Map<String, Boolean> getGroceryList()
     {
         return groceryList;
     }
@@ -85,7 +94,7 @@ public class User
     {
         this.groceryList.remove(key);
     }
-    public void setGroceryList(Map<String, String> groceryList)
+    public void setGroceryList(Map<String, Boolean> groceryList)
     {
         this.groceryList = groceryList;
     }
@@ -97,6 +106,16 @@ public class User
     public void setRecipeIds(Map<String, String> recipeIds)
     {
         this.recipeIds = recipeIds;
+    }
+
+    public String getSync()
+    {
+        return sync;
+    }
+
+    public void setSync(String sync)
+    {
+        this.sync = sync;
     }
 
     @Override

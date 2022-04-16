@@ -3,14 +3,18 @@ package edu.weber.w01311060.recipeapp;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Map;
@@ -130,12 +134,49 @@ public class RecipeViewModel extends ViewModel
         }
     }
 
-    public void setUser(User user)
+    public void setUser(User newUser)
     {
-        this.user.setValue(user);
         FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
         DatabaseReference reference = rootNode.getReference("users");
-        reference.child(user.getUid()).setValue(user);
+        if(newUser.getSync() != null)
+        {
+            Log.d("Sync", "In if with user.getSync: " + newUser.getSync().toString());
+            reference.child(newUser.getSync()).addListenerForSingleValueEvent(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot)
+                {
+                    if (snapshot.exists())
+                    {
+                        Log.d("Sync", "Synced user email: " + snapshot.child("email").getValue().toString());
+                        Map<String, Boolean> map = (Map<String, Boolean>) snapshot.child("groceryList").getValue();
+                        if (map != null)
+                        {
+                            Log.d("Sync", "Setting map");
+                            newUser.setGroceryList(map);
+
+                        }
+                        Log.d("Sync", "After sync user.getGroceryList: " + newUser.getGroceryList().toString());
+                        user.setValue(newUser);
+
+                        reference.child(newUser.getEmail()).setValue(newUser);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error)
+                {
+
+                }
+            });
+        }
+        else
+        {
+            Log.d("Sync", "After not sync user.getGroceryList: " + newUser.getGroceryList().toString());
+            user.setValue(newUser);
+
+            reference.child(newUser.getEmail()).setValue(newUser);
+        }
     }
     public LiveData<User> getUser()
     {

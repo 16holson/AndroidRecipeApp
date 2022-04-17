@@ -28,14 +28,18 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -230,30 +234,61 @@ public class GroceryListFragment extends Fragment
                 inputLayout.setPadding(getResources().getDimensionPixelOffset(R.dimen.dp_16), 0, getResources().getDimensionPixelOffset(R.dimen.dp_16), 0);
                 inputLayout.setHelperText("Ingredient");
                 inputLayout.addView(input);
-
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-                builder2.setTitle("Sync List")
-                        .setMessage("Enter the email of the user you wish to sync to")
-                        .setView(inputLayout)
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
+                if(newUser.getSync() == null)
+                {
+                    builder2.setTitle("Sync List")
+                            .setMessage("Enter the email of the user you wish to sync to")
+                            .setView(inputLayout)
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                             {
-                                dialogInterface.cancel();
-                            }
-                        })
-                        .setPositiveButton("Sync", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    dialogInterface.cancel();
+                                }
+                            })
+                            .setPositiveButton("Sync", new DialogInterface.OnClickListener()
                             {
-                                //set user.sync to uid of wanted user
-                                newUser.setSync(input.getText().toString().replace(".", "").replace("#", "").replace("$", ""));
-                                vm.setUser(newUser);
-                                dialogInterface.dismiss();
-                            }
-                        }).show();
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    //set user.sync to uid of wanted user
+                                    newUser.setSync(input.getText().toString().replace(".", "").replace("#", "").replace("$", "").trim());
+                                    vm.setUser(newUser);
+                                    dialogInterface.dismiss();
+                                    Toast.makeText(getActivity(), "Synced", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                }
+                else
+                {
+                    builder2.setTitle("Desync List")
+                            .setMessage("Do you want to desync")
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    dialogInterface.cancel();
+                                }
+                            })
+                            .setPositiveButton("Desync", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
+                                    DatabaseReference reference = rootNode.getReference("users");
+                                    reference.child(newUser.getSync()).child("sync").setValue(null);
+                                    newUser.setSync(null);
+                                    vm.setUser(newUser);
+                                    dialogInterface.dismiss();
+                                    Toast.makeText(getActivity(), "Desynced", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                }
+
                 return true;
             case R.id.delete:
                 //pull up dialog asking if they want to delete selected items

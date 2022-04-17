@@ -140,23 +140,36 @@ public class RecipeViewModel extends ViewModel
         DatabaseReference reference = rootNode.getReference("users");
         if(newUser.getSync() != null)
         {
-            Log.d("Sync", "In if with user.getSync: " + newUser.getSync().toString());
-            reference.child(newUser.getSync()).addListenerForSingleValueEvent(new ValueEventListener()
+            reference.child(newUser.getSync().toString()).addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
                     if (snapshot.exists())
                     {
-                        Log.d("Sync", "Synced user email: " + snapshot.child("email").getValue().toString());
                         Map<String, Boolean> map = (Map<String, Boolean>) snapshot.child("groceryList").getValue();
                         if (map != null)
                         {
-                            Log.d("Sync", "Setting map");
-                            newUser.setGroceryList(map);
+                            if(snapshot.child("sync").exists())
+                            {
+                                if(newUser.getSync().equals(snapshot.child("email").getValue()) && snapshot.child("sync").getValue().equals(newUser.getEmail()))
+                                {
+                                    //already synced
+                                    user.setValue(newUser);
+                                    reference.child(newUser.getEmail()).setValue(newUser);
+                                    reference.child(newUser.getSync()).child("groceryList").setValue(newUser.getGroceryList());
+                                }
+
+                            }
+                            else
+                            {
+                                //new sync
+                                reference.child(newUser.getSync()).child("sync").setValue(newUser.getEmail());
+                                newUser.setGroceryList(map);
+                            }
+
 
                         }
-                        Log.d("Sync", "After sync user.getGroceryList: " + newUser.getGroceryList().toString());
                         user.setValue(newUser);
 
                         reference.child(newUser.getEmail()).setValue(newUser);
@@ -172,7 +185,6 @@ public class RecipeViewModel extends ViewModel
         }
         else
         {
-            Log.d("Sync", "After not sync user.getGroceryList: " + newUser.getGroceryList().toString());
             user.setValue(newUser);
 
             reference.child(newUser.getEmail()).setValue(newUser);

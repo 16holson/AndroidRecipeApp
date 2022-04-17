@@ -296,9 +296,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                         newUser.addGroceryItem(item[0], false);
                         vm.setUser(newUser);
 
-                        Toast toast = new Toast(getContext());
-                        toast.setText("Added");
-                        toast.show();
+                        Toast.makeText(getActivity(), "Added", Toast.LENGTH_SHORT).show();
                     }
                 });
                 builder.show();

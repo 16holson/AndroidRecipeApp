@@ -124,6 +124,7 @@ public class LoginFragment extends Fragment
     {
         super.onCreate(savedInstanceState);
         getActivity().setContentView(R.layout.fragment_login);
+        signOut();
 
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -151,19 +152,6 @@ public class LoginFragment extends Fragment
                 }
             }
     );
-
-//    public void createSignInIntent()
-//    {
-//        List<AuthUI.IdpConfig> providers = Arrays.asList(
-//                new AuthUI.IdpConfig.EmailBuilder().build(),
-//                new AuthUI.IdpConfig.GoogleBuilder().build());
-//
-//        Intent signInIntent = AuthUI.getInstance()
-//                .createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .build();
-//        signInLauncher.launch(signInIntent);
-//    }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result)
     {

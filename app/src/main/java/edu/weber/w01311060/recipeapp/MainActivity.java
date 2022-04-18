@@ -5,17 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import edu.weber.w01311060.recipeapp.models.RecipeList;
 import edu.weber.w01311060.recipeapp.models.User;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener
+public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener, AccountFragment.onLogoutListener
 {
     private FragmentManager fm;
     private User user;
@@ -75,6 +78,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
         bottomNavigationView.setSelectedItemId(R.id.recipes);
         fm.beginTransaction()
                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")
+                .commit();
+    }
+
+    @Override
+    public void onLogout()
+    {
+        fm.beginTransaction()
+                .replace(R.id.fragmentContainerView, new LoginFragment(), "loginFrag")
                 .commit();
     }
 }

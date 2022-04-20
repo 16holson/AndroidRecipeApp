@@ -56,6 +56,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     private RecipeViewModel vm;
     private RecipeRecyclerAdapter adapter;
     private User newUser;
+    private LiveData<List<Recipe>> recipes;
     private String[] categories = new String[]{"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
 
     public RecipeListFragment()
@@ -98,6 +99,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         vm = new ViewModelProvider(getActivity())
                 .get(RecipeViewModel.class);
         adapter = new RecipeRecyclerAdapter(new ArrayList<Recipe>(), this);
+
         return root = inflater.inflate(R.layout.fragment_recipe_list, container, false);
     }
 
@@ -162,6 +164,26 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                         }
                     });
         }
+
+        //create database if needed
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                recipes = AppDatabase.getInstance(getContext())
+                        .getRecipeDao()
+                        .getAll();
+                if (recipes.getValue() == null)
+                {
+                    Log.d("Recipe", "recipes is null");
+                }
+                else
+                {
+                    Log.d("Recipe", "recipes is not null");
+                }
+            }
+        }).start();
     }
 
     @Override

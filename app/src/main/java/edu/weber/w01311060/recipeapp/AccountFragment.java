@@ -1,6 +1,8 @@
 package edu.weber.w01311060.recipeapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -42,29 +44,11 @@ public class AccountFragment extends Fragment
     private String mParam2;
 
     private View root;
-    private TextView usernameText, passwordText, emailText;
+    private TextView usernameText, emailText;
     private Button changeBtn;
-    private onLogoutListener mCallBack;
 
 
-    public interface onLogoutListener
-    {
-        void onLogout();
-    }
 
-    @Override
-    public void onAttach(@NonNull Activity activity)
-    {
-        super.onAttach(activity);
-        try
-        {
-            mCallBack = (onLogoutListener) activity;
-        }
-        catch (ClassCastException e)
-        {
-            throw new ClassCastException(activity.toString() + "must implement onLoginListener");
-        }
-    }
 
     public AccountFragment()
     {
@@ -122,7 +106,6 @@ public class AccountFragment extends Fragment
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         usernameText = root.findViewById(R.id.usernameText);
-        passwordText = root.findViewById(R.id.passwordText);
         emailText = root.findViewById(R.id.emailText);
 
         usernameText.setText(user.getDisplayName());
@@ -135,6 +118,8 @@ public class AccountFragment extends Fragment
             public void onClick(View view)
             {
                 //open change password fragment
+                ChangePasswordDialog dialog = new ChangePasswordDialog();
+                dialog.show(getParentFragmentManager(), "ChangPassFrag");
             }
         });
     }
@@ -154,8 +139,27 @@ public class AccountFragment extends Fragment
         {
             case R.id.logout:
                 //Logout user with dialog? and bring up the firebase login again
-                mCallBack.onLogout();
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Logout")
+                        .setMessage("Are you sure you want to logout")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .setPositiveButton("Logout", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(intent);
+                            }
+                        }).show();
                 return true;
         }
 

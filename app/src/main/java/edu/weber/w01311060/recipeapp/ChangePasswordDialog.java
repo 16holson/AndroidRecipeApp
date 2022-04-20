@@ -1,19 +1,34 @@
 package edu.weber.w01311060.recipeapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ChangePasswordDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChangePasswordDialog extends Fragment
+public class ChangePasswordDialog extends DialogFragment
 {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -24,6 +39,10 @@ public class ChangePasswordDialog extends Fragment
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private View root;
+    private EditText newPassText, confirmPassText;
+    private Button changePassBtn;
 
     public ChangePasswordDialog()
     {
@@ -58,6 +77,8 @@ public class ChangePasswordDialog extends Fragment
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_FullScreen);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -65,6 +86,64 @@ public class ChangePasswordDialog extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_change_password_dialog, container, false);
+        return root = inflater.inflate(R.layout.fragment_change_password_dialog, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        requireDialog().getWindow().setWindowAnimations(R.style.AppTheme_DialogAnimation);
+
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        newPassText = root.findViewById(R.id.newPassword);
+        confirmPassText = root.findViewById(R.id.confirmPassword);
+        changePassBtn = root.findViewById(R.id.changePassBtn);
+
+        changePassBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                if (newPassText.getText().toString().equals(confirmPassText.getText().toString()))
+                {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    user.updatePassword(newPassText.getText().toString());
+                    Toast.makeText(getActivity(), "Changed Password", Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Passwords Don't Match", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        Toolbar toolbar = root.findViewById(R.id.passwodToolbar);
+        toolbar.setTitle("Change Password");
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                dismiss();
+            }
+        });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.passmenu, menu);
     }
 }

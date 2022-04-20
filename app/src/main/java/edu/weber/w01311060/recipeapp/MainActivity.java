@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import edu.weber.w01311060.recipeapp.models.RecipeList;
 import edu.weber.w01311060.recipeapp.models.User;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener, AccountFragment.onLogoutListener
+public class MainActivity extends AppCompatActivity implements LoginFragment.onLoginListener
 {
     private FragmentManager fm;
     private User user;
@@ -78,14 +78,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
         bottomNavigationView.setSelectedItemId(R.id.recipes);
         fm.beginTransaction()
                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")
-                .commit();
-    }
-
-    @Override
-    public void onLogout()
-    {
-        fm.beginTransaction()
-                .replace(R.id.fragmentContainerView, new LoginFragment(), "loginFrag")
                 .commit();
     }
 }

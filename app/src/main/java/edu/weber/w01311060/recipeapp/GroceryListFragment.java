@@ -133,12 +133,11 @@ public class GroceryListFragment extends Fragment
             {
                 CheckedTextView v = (CheckedTextView) view;
                 boolean isChecked = v.isChecked();
+                Log.d("Sync", "isChecked: " + isChecked);
                 Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(isChecked));
-                Log.d("Grocery", "Ingredient name: " + newIngredient.getName() + " isActive: " + newIngredient.isActive());
                 newUser.updateGroceryItem(newIngredient);
-                Log.d("SetUser", "at grocery list groceryList.get(0): " + newUser.getGroceryList().get(0).isActive());
                 vm.setUser(newUser);
-//                initListViewData();
+
             }
         });
 
@@ -148,7 +147,7 @@ public class GroceryListFragment extends Fragment
             public void onChanged(User user)
             {
                 newUser = user;
-                //initListViewData();
+
             }
         });
 
@@ -226,20 +225,15 @@ public class GroceryListFragment extends Fragment
             {
                 CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
                 checkedTextView.setText(model.getName());
+                Log.d("Sync", "setChecked to: " + Boolean.valueOf(model.isActive()));
                 checkedTextView.setChecked(Boolean.valueOf(model.isActive()));
+                Log.d("Sync", "isChecked: " + checkedTextView.isChecked());
+//                newUser.updateGroceryItem(model);
+//                vm.setUser(newUser);
             }
         };
         listView.setAdapter(adapter);
-
-//        arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, newIngredients);
-//        listView.setAdapter(arrayAdapter);
-//        for (int j = 0; j < listView.getCount(); j++)
-//        {
-//            if (((Ingredient)listView.getItemAtPosition(j)).isActive())
-//            {
-//                listView.setItemChecked(j, true);
-//            }
-//        }
+        Log.d("Sync", "set adapter");
 
     }
 

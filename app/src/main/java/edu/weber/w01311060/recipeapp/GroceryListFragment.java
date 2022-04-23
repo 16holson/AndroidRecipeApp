@@ -125,21 +125,6 @@ public class GroceryListFragment extends Fragment
                 .get(RecipeViewModel.class);
 
         listView = root.findViewById(R.id.groceryListView);
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                CheckedTextView v = (CheckedTextView) view;
-                boolean isChecked = v.isChecked();
-                Log.d("Sync", "isChecked: " + isChecked);
-                Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(isChecked));
-                newUser.updateGroceryItem(newIngredient);
-                vm.setUser(newUser);
-
-            }
-        });
 
         vm.getUser().observe(getViewLifecycleOwner(), new Observer<User>()
         {
@@ -214,7 +199,7 @@ public class GroceryListFragment extends Fragment
         Query query = reference.child(newUser.getEmail()).child("groceryList");
         FirebaseListOptions<Ingredient> options = new FirebaseListOptions.Builder<Ingredient>()
                 .setQuery(query, Ingredient.class)
-                .setLayout(android.R.layout.simple_list_item_multiple_choice)
+                .setLayout(R.layout.groceryitem)
                 .setLifecycleOwner(getActivity())
                 .build();
 
@@ -223,13 +208,63 @@ public class GroceryListFragment extends Fragment
             @Override
             protected void populateView(@NonNull View v, @NonNull Ingredient model, int position)
             {
-                CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
-                checkedTextView.setText(model.getName());
-                Log.d("Sync", "setChecked to: " + Boolean.valueOf(model.isActive()));
-                checkedTextView.setChecked(Boolean.valueOf(model.isActive()));
-                Log.d("Sync", "isChecked: " + checkedTextView.isChecked());
+//                CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
+//                checkedTextView.setText(model.getName());
+//                Log.d("Sync", "setChecked to: " + Boolean.valueOf(model.isActive()));
+//                checkedTextView.setChecked(Boolean.valueOf(model.isActive()));
+//                Log.d("Sync", "isChecked: " + checkedTextView.isChecked());
 //                newUser.updateGroceryItem(model);
 //                vm.setUser(newUser);
+
+                TextView text = v.findViewById(R.id.groceryItem);
+                CheckBox box = v.findViewById(R.id.groceryBox);
+                text.setText(model.getName());
+                box.setChecked(Boolean.valueOf(model.isActive()));
+
+                v.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Log.d("List", "Clicked listitem");
+                        CheckBox checkbox = view.findViewById(R.id.groceryBox);
+                        if(checkbox.isChecked())
+                        {
+                            checkbox.setChecked(false);
+                        }
+                        else
+                        {
+                            checkbox.setChecked(true);
+                        }
+                        Ingredient newIngredient = new Ingredient(model.getName(), String.valueOf(checkbox.isChecked()));
+                        newUser.updateGroceryItem(newIngredient);
+                        vm.setUser(newUser);
+                    }
+                });
+//                text.setOnClickListener(new View.OnClickListener()
+//                {
+//                    @Override
+//                    public void onClick(View view)
+//                    {
+//                        Log.d("List", "Clicked listitem");
+//                        CheckBox box = view.findViewById(R.id.groceryBox);
+//                        Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(box.isChecked()));
+//                        newUser.updateGroceryItem(newIngredient);
+//                        vm.setUser(newUser);
+//                    }
+//                });
+//                box.setOnClickListener(new View.OnClickListener()
+//                {
+//                    @Override
+//                    public void onClick(View view)
+//                    {
+//                        Log.d("List", "Clicked listitem");
+//                        CheckBox box = view.findViewById(R.id.groceryBox);
+//                        Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(box.isChecked()));
+//                        newUser.updateGroceryItem(newIngredient);
+//                        vm.setUser(newUser);
+//                    }
+//                });
             }
         };
         listView.setAdapter(adapter);

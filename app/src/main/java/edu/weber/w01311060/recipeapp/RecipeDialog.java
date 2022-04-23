@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import edu.weber.w01311060.recipeapp.models.Ingredient;
 import edu.weber.w01311060.recipeapp.models.Recipe;
 import edu.weber.w01311060.recipeapp.models.RecipeDetails;
 import edu.weber.w01311060.recipeapp.models.User;
@@ -293,7 +294,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
                         //save ingredient to database
-                        newUser.addGroceryItem(item[0], false);
+                        newUser.addGroceryItem(new Ingredient(item[0], "false"));
                         vm.setUser(newUser);
 
                         Toast.makeText(getActivity(), "Added", Toast.LENGTH_SHORT).show();

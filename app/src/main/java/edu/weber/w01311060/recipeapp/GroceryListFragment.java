@@ -25,15 +25,23 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +78,7 @@ public class GroceryListFragment extends Fragment
     private RecipeViewModel vm;
     private FloatingActionButton addBtn;
     private ArrayAdapter<Ingredient> arrayAdapter;
+    private FirebaseListAdapter<Ingredient> adapter;
 
     public GroceryListFragment()
     {
@@ -124,9 +133,12 @@ public class GroceryListFragment extends Fragment
             {
                 CheckedTextView v = (CheckedTextView) view;
                 boolean isChecked = v.isChecked();
-                newUser.updateGroceryItem(((Ingredient)listView.getItemAtPosition(i)).getName(), isChecked);
+                Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(isChecked));
+                Log.d("Grocery", "Ingredient name: " + newIngredient.getName() + " isActive: " + newIngredient.isActive());
+                newUser.updateGroceryItem(newIngredient);
+                Log.d("SetUser", "at grocery list groceryList.get(0): " + newUser.getGroceryList().get(0).isActive());
                 vm.setUser(newUser);
-                initListViewData();
+//                initListViewData();
             }
         });
 
@@ -136,9 +148,10 @@ public class GroceryListFragment extends Fragment
             public void onChanged(User user)
             {
                 newUser = user;
-                initListViewData();
+                //initListViewData();
             }
         });
+
 
         return root;
     }
@@ -147,6 +160,7 @@ public class GroceryListFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        initListViewData();
 
         Toolbar toolbar = root.findViewById(R.id.groceryToolbar);
         toolbar.setTitle("Grocery List");
@@ -182,7 +196,8 @@ public class GroceryListFragment extends Fragment
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                newUser.addGroceryItem(input.getText().toString(), false);
+//                                newUser.addGroceryItem(input.getText().toString(), false);
+                                newUser.addGroceryItem(new Ingredient(input.getText().toString(), "false"));
                                 vm.setUser(newUser);
                                 dialogInterface.dismiss();
                             }
@@ -194,22 +209,37 @@ public class GroceryListFragment extends Fragment
 
     public void initListViewData()
     {
-        List<Ingredient> newIngredients = new ArrayList<Ingredient>();
-        for (Map.Entry<String, Boolean> entry : newUser.getGroceryList().entrySet())
-        {
-            newIngredients.add(new Ingredient(entry.getKey(), entry.getValue()));
-        }
+        Log.d("Grocery", "initListViewData");
+        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
+        DatabaseReference reference = rootNode.getReference("users");
+        Query query = reference.child(newUser.getEmail()).child("groceryList");
+        FirebaseListOptions<Ingredient> options = new FirebaseListOptions.Builder<Ingredient>()
+                .setQuery(query, Ingredient.class)
+                .setLayout(android.R.layout.simple_list_item_multiple_choice)
+                .setLifecycleOwner(getActivity())
+                .build();
 
-        Collections.sort(newIngredients);
-        arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, newIngredients);
-        listView.setAdapter(arrayAdapter);
-        for (int j = 0; j < listView.getCount(); j++)
+        adapter = new FirebaseListAdapter<Ingredient>(options)
         {
-            if (((Ingredient)listView.getItemAtPosition(j)).isActive())
+            @Override
+            protected void populateView(@NonNull View v, @NonNull Ingredient model, int position)
             {
-                listView.setItemChecked(j, true);
+                CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
+                checkedTextView.setText(model.getName());
+                checkedTextView.setChecked(Boolean.valueOf(model.isActive()));
             }
-        }
+        };
+        listView.setAdapter(adapter);
+
+//        arrayAdapter = new ArrayAdapter<Ingredient>(getActivity(), android.R.layout.simple_list_item_multiple_choice, newIngredients);
+//        listView.setAdapter(arrayAdapter);
+//        for (int j = 0; j < listView.getCount(); j++)
+//        {
+//            if (((Ingredient)listView.getItemAtPosition(j)).isActive())
+//            {
+//                listView.setItemChecked(j, true);
+//            }
+//        }
 
     }
 

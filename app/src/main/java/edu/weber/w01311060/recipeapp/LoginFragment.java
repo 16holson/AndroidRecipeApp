@@ -40,12 +40,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.weber.w01311060.recipeapp.models.Ingredient;
 import edu.weber.w01311060.recipeapp.models.User;
 
 /**
@@ -174,16 +177,41 @@ public class LoginFragment extends Fragment
                     if (snapshot.exists())
                     {
                         Map<String, String> map = (Map<String, String>) snapshot.child("recipeIds").getValue();
-                        Map<String, Boolean> map2 = (Map<String, Boolean>) snapshot.child("groceryList").getValue();
+                        ArrayList<HashMap<String, String>> list = (ArrayList<HashMap<String, String>>) snapshot.child("groceryList").getValue();
                         String sync = (String)snapshot.child("sync").getValue();
                         if (map != null)
                         {
                             newUser.setRecipeIds(map);
                         }
-                        if (map2 != null)
+                        if (list != null)
                         {
-                            newUser.setGroceryList(map2);
+                            Log.d("Login", "Setting groceryList");
+                            ArrayList<Ingredient> ingredients = new ArrayList<>();
+                            for (int i = 0; i < list.size(); i++)
+                            {
+                                String name = "";
+                                String active = "";
+
+                                for (Map.Entry<String, String> entry : list.get(i).entrySet())
+                                {
+                                    if(entry.getKey().equals("name"))
+                                    {
+                                        name = entry.getValue();
+                                        Log.d("Login", "key name getValue: " + entry.getValue().toString());
+                                    }
+                                    else
+                                    {
+                                        active = entry.getValue();
+                                        Log.d("Login", "key active: " + entry.getValue().toString());
+                                    }
+
+
+                                }
+                                ingredients.add(new Ingredient(name, active));
+                            }
+                            newUser.setGroceryList(ingredients);
                         }
+
                         if (sync != null)
                         {
                             newUser.setSync(sync);

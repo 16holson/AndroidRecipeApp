@@ -16,10 +16,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.weber.w01311060.recipeapp.db.AppDatabase;
+import edu.weber.w01311060.recipeapp.models.Ingredient;
 import edu.weber.w01311060.recipeapp.models.Recipe;
 import edu.weber.w01311060.recipeapp.models.User;
 
@@ -124,7 +127,7 @@ public class RecipeViewModel extends ViewModel
             }
         }).start();
 
-        if(recipe == null)
+        if (recipe == null)
         {
             return true;
         }
@@ -134,10 +137,16 @@ public class RecipeViewModel extends ViewModel
         }
     }
 
+    public void updateGroceryList(User newUser)
+    {
+        user.setValue(newUser);
+    }
+
     public void setUser(User newUser)
     {
-        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
+        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
         DatabaseReference reference = rootNode.getReference("users");
+
         if(newUser.getSync() != null)
         {
             reference.child(newUser.getSync().toString()).addListenerForSingleValueEvent(new ValueEventListener()
@@ -147,31 +156,58 @@ public class RecipeViewModel extends ViewModel
                 {
                     if (snapshot.exists())
                     {
-                        Map<String, Boolean> map = (Map<String, Boolean>) snapshot.child("groceryList").getValue();
-                        if (map != null)
+                        //List<Ingredient> list = (List<Ingredient>) snapshot.child("groceryList").getValue();
+                        ArrayList<HashMap<String, String>> list = (ArrayList<HashMap<String, String>>) snapshot.child("groceryList").getValue();
+
+                        if (list != null)
                         {
                             if(snapshot.child("sync").exists())
                             {
                                 if(newUser.getSync().equals(snapshot.child("email").getValue()) && snapshot.child("sync").getValue().equals(newUser.getEmail()))
                                 {
                                     //already synced
+                                    Log.d("Sync", "update user when synced");
                                     user.setValue(newUser);
                                     reference.child(newUser.getEmail()).setValue(newUser);
                                     reference.child(newUser.getSync()).child("groceryList").setValue(newUser.getGroceryList());
                                 }
-
                             }
                             else
                             {
                                 //new sync
                                 reference.child(newUser.getSync()).child("sync").setValue(newUser.getEmail());
-                                newUser.setGroceryList(map);
+
+                                ArrayList<Ingredient> ingredients = new ArrayList<>();
+                                for (int i = 0; i < list.size(); i++)
+                                {
+                                    String name = "";
+                                    String active = "";
+
+                                    for (Map.Entry<String, String> entry : list.get(i).entrySet())
+                                    {
+                                        if(entry.getKey().equals("name"))
+                                        {
+                                            name = entry.getValue();
+                                        }
+                                        else
+                                        {
+                                            active = entry.getValue();
+                                        }
+
+
+                                    }
+                                    ingredients.add(new Ingredient(name, active));
+                                }
+                                newUser.setGroceryList(ingredients);
                             }
 
+                            user.setValue(newUser);
+
+                            reference.child(newUser.getEmail()).setValue(newUser);
 
                         }
-                        user.setValue(newUser);
 
+                        user.setValue(newUser);
                         reference.child(newUser.getEmail()).setValue(newUser);
                     }
                 }
@@ -186,7 +222,6 @@ public class RecipeViewModel extends ViewModel
         else
         {
             user.setValue(newUser);
-
             reference.child(newUser.getEmail()).setValue(newUser);
         }
     }

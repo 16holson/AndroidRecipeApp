@@ -3,14 +3,19 @@ package edu.weber.w01311060.recipeapp.models;
 public class Ingredient implements Comparable<Ingredient>
 {
     private String name;
-    private boolean active;
+    private String active;
+
+    public Ingredient()
+    {
+
+    }
 
     public Ingredient(String name)
     {
         this.name = name;
-        active = false;
+        active = "false";
     }
-    public Ingredient(String name, boolean active)
+    public Ingredient(String name, String active)
     {
         this.name = name;
         this.active = active;
@@ -26,12 +31,12 @@ public class Ingredient implements Comparable<Ingredient>
         this.name = name;
     }
 
-    public boolean isActive()
+    public String isActive()
     {
         return active;
     }
 
-    public void setActive(boolean active)
+    public void setActive(String active)
     {
         this.active = active;
     }
@@ -45,6 +50,6 @@ public class Ingredient implements Comparable<Ingredient>
     @Override
     public int compareTo(Ingredient i)
     {
-        return Boolean.compare(this.active, i.active);
+        return Boolean.compare(Boolean.valueOf(this.active), Boolean.valueOf(i.active));
     }
 }

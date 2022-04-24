@@ -102,7 +102,7 @@ public class AccountFragment extends Fragment
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         Toolbar toolbar = root.findViewById(R.id.accountToolbar);
-        toolbar.setTitle("Account");
+        toolbar.setTitle(R.string.account);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         usernameText = root.findViewById(R.id.usernameText);
@@ -138,11 +138,11 @@ public class AccountFragment extends Fragment
         switch (item.getItemId())
         {
             case R.id.logout:
-                //Logout user with dialog? and bring up the firebase login again
+                //Logout user with dialog and bring up the firebase login again
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Logout")
-                        .setMessage("Are you sure you want to logout")
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                builder.setTitle(R.string.logout)
+                        .setMessage(R.string.confirmlogout)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
@@ -150,7 +150,7 @@ public class AccountFragment extends Fragment
                                 dialogInterface.cancel();
                             }
                         })
-                        .setPositiveButton("Logout", new DialogInterface.OnClickListener()
+                        .setPositiveButton(R.string.logout, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)

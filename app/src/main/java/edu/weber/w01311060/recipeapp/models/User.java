@@ -1,9 +1,5 @@
 package edu.weber.w01311060.recipeapp.models;
 
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseUser;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +12,6 @@ public class User
     private String uid;
     private String sync;
     private Map<String, String> recipeIds;
-    //private Map<String, Boolean> groceryList;
     private List<Ingredient> groceryList;
 
     public User()
@@ -30,7 +25,6 @@ public class User
         this.email = email;
         this.uid = uid;
         recipeIds = new HashMap<String, String>();
-//        groceryList = new HashMap<String, Boolean>();
         groceryList = new ArrayList<Ingredient>();
         sync = null;
 
@@ -75,48 +69,36 @@ public class User
     {
         this.recipeIds.put(recipeName, recipeId);
     }
-//    public void addGroceryItem(String name, boolean checked)
-//    {
-//        if (!groceryList.containsKey(name))
-//        {
-//            this.groceryList.put(name, checked);
-//        }
-//
-//    }
     public void addGroceryItem(Ingredient ingredient)
     {
-        groceryList.add(ingredient);
+        boolean contains = false;
+        for(Ingredient i : groceryList)
+        {
+            if(i.getName().equals(ingredient.getName()))
+            {
+                contains = true;
+            }
+        }
+        if(!contains)
+        {
+            groceryList.add(ingredient);
+        }
     }
-//    public void updateGroceryItem(String name, boolean checked)
-//    {
-//        if (groceryList.containsKey(name))
-//        {
-//            this.groceryList.put(name, checked);
-//        }
-//    }
+
     public void updateGroceryItem(Ingredient ingredient)
     {
-        for (int i = 0; i < groceryList.size(); i++)
+        for (Ingredient i : groceryList)
         {
-            if (groceryList.get(i).getName().equals(ingredient.getName()))
+            if (i.getName().equals(ingredient.getName()))
             {
-                groceryList.get(i).setActive(ingredient.isActive());
+                i.setActive(ingredient.isActive());
             }
         }
     }
-//    public Map<String, Boolean> getGroceryList()
-//    {
-//        return groceryList;
-//    }
     public List<Ingredient> getGroceryList()
     {
         return groceryList;
     }
-
-//    public void removeGroceryItem(String key)
-//    {
-//        this.groceryList.remove(key);
-//    }
     public void removeGroceryItem(String name)
     {
         for (int i = 0; i < groceryList.size(); i++)
@@ -127,10 +109,6 @@ public class User
             }
         }
     }
-//    public void setGroceryList(Map<String, Boolean> groceryList)
-//    {
-//        this.groceryList = groceryList;
-//    }
     public void setGroceryList(List<Ingredient> groceryList)
     {
         this.groceryList = groceryList;

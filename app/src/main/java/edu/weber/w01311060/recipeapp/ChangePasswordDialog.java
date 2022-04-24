@@ -115,18 +115,18 @@ public class ChangePasswordDialog extends DialogFragment
                 {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     user.updatePassword(newPassText.getText().toString());
-                    Toast.makeText(getActivity(), "Changed Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.changedpassword, Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
                 else
                 {
-                    Toast.makeText(getActivity(), "Passwords Don't Match", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.dontmatch, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         Toolbar toolbar = root.findViewById(R.id.passwodToolbar);
-        toolbar.setTitle("Change Password");
+        toolbar.setTitle(R.string.changepassword);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
         toolbar.setNavigationOnClickListener(new View.OnClickListener()

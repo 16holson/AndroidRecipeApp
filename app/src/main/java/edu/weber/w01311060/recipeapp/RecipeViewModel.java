@@ -30,9 +30,7 @@ public class RecipeViewModel extends ViewModel
 {
     private LiveData<List<Recipe>> recipeList;
     private LiveData<List<Recipe>> favRecipeList;
-    private Recipe recipe;
     private MutableLiveData<User> user = new MutableLiveData<>();
-    private LiveData<List<Recipe>> newList;
     private boolean isFavorite = false;
 
     public LiveData<List<Recipe>> getAllRecipes(Context context)
@@ -84,66 +82,9 @@ public class RecipeViewModel extends ViewModel
         }
     }
 
-    public LiveData<List<Recipe>> filterRecipeList(List<String> ids)
-    {
-        for (Recipe recipe : recipeList.getValue())
-        {
-            if (ids.contains(String.valueOf(recipe.getIdMeal())))
-            {
-                newList.getValue().add(recipe);
-            }
-        }
-        return newList;
-    }
-    public LiveData<List<Recipe>> searchRecipeList(String name)
-    {
-        if (newList == null)
-        {
-            newList = recipeList;
-        }
-        newList.getValue().clear();
-        for (Recipe recipe : recipeList.getValue())
-        {
-            if (name.matches("(.*)" + recipe.getStrMeal() + "(.*)"))
-            {
-                newList.getValue().add(recipe);
-                Log.d("Search", "Found recipe");
-            }
-        }
-        return newList;
-    }
-
-
-    public boolean tableEmpty(Context context)
-    {
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                recipe = AppDatabase.getInstance(context)
-                        .getRecipeDao()
-                        .getLastRecipe();
-            }
-        }).start();
-
-        if (recipe == null)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void updateGroceryList(User newUser)
-    {
-        user.setValue(newUser);
-    }
-
     public void setUser(User newUser)
     {
+        //Updates user with newUser in FirebaseDatabase
         FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
         DatabaseReference reference = rootNode.getReference("users");
 
@@ -156,7 +97,6 @@ public class RecipeViewModel extends ViewModel
                 {
                     if (snapshot.exists())
                     {
-                        //List<Ingredient> list = (List<Ingredient>) snapshot.child("groceryList").getValue();
                         ArrayList<HashMap<String, String>> list = (ArrayList<HashMap<String, String>>) snapshot.child("groceryList").getValue();
 
                         if (list != null)
@@ -166,7 +106,6 @@ public class RecipeViewModel extends ViewModel
                                 if(newUser.getSync().equals(snapshot.child("email").getValue()) && snapshot.child("sync").getValue().equals(newUser.getEmail()))
                                 {
                                     //already synced
-                                    Log.d("Sync", "update user when synced");
                                     user.setValue(newUser);
                                     reference.child(newUser.getEmail()).setValue(newUser);
                                     reference.child(newUser.getSync()).child("groceryList").setValue(newUser.getGroceryList());

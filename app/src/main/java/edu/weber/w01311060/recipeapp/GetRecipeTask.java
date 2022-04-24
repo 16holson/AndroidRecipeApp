@@ -59,7 +59,6 @@ public class GetRecipeTask extends AsyncTask<Integer, Integer, String>
                 case 201:
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     json = reader.readLine();
-                    Log.d("Task", "json: " + json);
                     return json;
 
             }
@@ -83,7 +82,6 @@ public class GetRecipeTask extends AsyncTask<Integer, Integer, String>
         json = json.replace("{\"meals\":[", "");
         json = json.replace("]}", "");
         recipeDetails = jsonParse(json);
-        Log.d("Task", "parsed json: " + recipeDetails.toString());
         mCallBack.processFinished(recipeDetails);
     }
 
@@ -96,7 +94,6 @@ public class GetRecipeTask extends AsyncTask<Integer, Integer, String>
             ArrayList<String> ings = new ArrayList<String>();
             JSONObject jo = new JSONObject(rawJson);
 
-            Log.d("Task", "Recipe name: " + jo.get("strInstructions").toString());
 
             recipeDetails.setIdMeal(recipeId);
             recipeDetails.setStrMeal(jo.get("strMeal").toString());
@@ -111,7 +108,6 @@ public class GetRecipeTask extends AsyncTask<Integer, Integer, String>
 
                 if(!ing.equals("") && !ing.equals("null"))
                 {
-                    Log.d("Task", "ing: " + ing);
                     ings.add(ing + " - " + measure);
                 }
             }

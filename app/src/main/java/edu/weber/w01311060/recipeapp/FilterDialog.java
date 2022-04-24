@@ -109,7 +109,7 @@ public class FilterDialog extends DialogFragment
         requireDialog().getWindow().setWindowAnimations(R.style.AppTheme_DialogAnimation);
 
         Toolbar toolbar = root.findViewById(R.id.filterToolbar);
-        toolbar.setTitle("Filter Recipes");
+        toolbar.setTitle(R.string.filter);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_close_24);
         toolbar.setNavigationOnClickListener(new View.OnClickListener()

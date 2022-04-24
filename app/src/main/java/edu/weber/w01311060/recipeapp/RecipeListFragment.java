@@ -2,6 +2,7 @@ package edu.weber.w01311060.recipeapp;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -52,12 +53,11 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     private boolean isFavorite;
     private View root;
     private RecyclerView rv;
-    private Button recipeBtn;
     private RecipeViewModel vm;
     private RecipeRecyclerAdapter adapter;
     private User newUser;
+    private Toolbar toolbar;
     private LiveData<List<Recipe>> recipes;
-    private String[] categories = new String[]{"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
 
     public RecipeListFragment()
     {
@@ -108,19 +108,9 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     {
         super.onResume();
 
-        Toolbar toolbar = root.findViewById(R.id.recipeListToolbar);
-        toolbar.setTitle("Recipes");
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar = root.findViewById(R.id.recipeListToolbar);
 
-        recipeBtn = root.findViewById(R.id.loadBtn);
-        recipeBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                loadRecipes();
-            }
-        });
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         rv = root.findViewById(R.id.recipeRecycleView);
 
@@ -134,6 +124,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
 
         if(isFavorite)
         {
+            toolbar.setTitle(R.string.favorites);
             vm.getUser().observe(getViewLifecycleOwner(), new Observer<User>()
             {
                 @Override
@@ -149,6 +140,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         }
         else
         {
+            toolbar.setTitle(R.string.recipes);
             vm.setFavorite(false);
             vm.getAllRecipes(getContext())
                     .observe(this, new Observer<List<Recipe>>()
@@ -164,26 +156,6 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                         }
                     });
         }
-
-        //create database if needed
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                recipes = AppDatabase.getInstance(getContext())
-                        .getRecipeDao()
-                        .getAll();
-                if (recipes.getValue() == null)
-                {
-                    Log.d("Recipe", "recipes is null");
-                }
-                else
-                {
-                    Log.d("Recipe", "recipes is not null");
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -237,17 +209,6 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
         dialog.show(getParentFragmentManager(), "RecipeDialog");
         dialog.setRecipe(recipe);
     }
-
-    private void loadRecipes()
-    {
-        Log.d("Task", "loadRecipes");
-        for(int i = 0; i < categories.length; i++)
-        {
-            ContextCategory param = new ContextCategory(getContext(), categories[i]);
-            GetRecipeListTask task = new GetRecipeListTask();
-            task.execute(param);
-        }
-    }
     private void searchRecipes(String query)
     {
         query = "%" + query + "%";
@@ -270,14 +231,13 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     @Override
     public void onFilter(List<String> categories)
     {
-        //search recipes
-
+        newUser = vm.getUser().getValue();
         StringBuilder builder = new StringBuilder(" SELECT * FROM Recipe ");
         if (categories.size() > 0 && !isFavorite)
         {
             builder.append(" WHERE category IN (");
         }
-        else
+        else if (isFavorite)
         {
             builder.append(" WHERE idMeal IN (");
             for (Map.Entry<String, String> entry : newUser.getRecipeIds().entrySet())
@@ -287,7 +247,13 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
             }
             builder.deleteCharAt(builder.length()-1);
             builder.deleteCharAt(builder.length()-1);
-            builder.append(") AND category IN (");
+            builder.append(")");
+            if (categories.size() > 0)
+            {
+
+                builder.append(" AND category IN (");
+            }
+
         }
         for (int i = 0; i < categories.size(); i++)
         {
@@ -300,7 +266,6 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
                 builder.append("?)");
             }
         }
-        Log.d("Filter", builder.toString());
         SimpleSQLiteQuery query = new SimpleSQLiteQuery(builder.toString(), categories.toArray());
 
         vm.filterRecipes(query, getContext())
@@ -320,6 +285,7 @@ public class RecipeListFragment extends Fragment implements RecipeRecyclerAdapte
     }
     public void onFavorite()
     {
+        //Shows only favorited recipes for the Favorites tab
         StringBuilder builder = new StringBuilder(" SELECT * FROM Recipe ");
 
         if (!newUser.getRecipeIds().isEmpty())

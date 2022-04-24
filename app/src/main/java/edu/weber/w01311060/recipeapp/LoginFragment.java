@@ -158,8 +158,6 @@ public class LoginFragment extends Fragment
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result)
     {
-        Log.d("Login", "In onSignInResult: " + result.getResultCode());
-        Log.d("Login", "Result_Ok: " + Activity.RESULT_OK);
         IdpResponse response = result.getIdpResponse();
         if(result.getResultCode() == Activity.RESULT_OK)
         {
@@ -169,6 +167,7 @@ public class LoginFragment extends Fragment
 
             rootNode = FirebaseDatabase.getInstance();
             reference = rootNode.getReference("users");
+            //Sets recipeList, groceryList, and sync
             reference.child(newUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
@@ -185,7 +184,6 @@ public class LoginFragment extends Fragment
                         }
                         if (list != null)
                         {
-                            Log.d("Login", "Setting groceryList");
                             ArrayList<Ingredient> ingredients = new ArrayList<>();
                             for (int i = 0; i < list.size(); i++)
                             {
@@ -197,12 +195,10 @@ public class LoginFragment extends Fragment
                                     if(entry.getKey().equals("name"))
                                     {
                                         name = entry.getValue();
-                                        Log.d("Login", "key name getValue: " + entry.getValue().toString());
                                     }
                                     else
                                     {
                                         active = entry.getValue();
-                                        Log.d("Login", "key active: " + entry.getValue().toString());
                                     }
 
 

@@ -201,7 +201,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                         vm.setUser(newUser);
                         favorited = true;
                         Toast toast = new Toast(getContext());
-                        toast.setText("Favorited");
+                        toast.setText(R.string.favorited);
                         toast.show();
                     }
                     else
@@ -213,7 +213,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                         vm.setUser(newUser);
                         favorited = false;
                         Toast toast = new Toast(getContext());
-                        toast.setText("Unfavorited");
+                        toast.setText(R.string.unfavorited);
                         toast.show();
                     }
 
@@ -250,7 +250,6 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
     public void processFinished(RecipeDetails output)
     {
         //set lists change instructions to a list
-        //instructions = output.getInstructions();
         instructions = output.getInstructions().split("\\r\\n");
         ingredients = output.getIngredients().toArray(new String[output.getIngredients().size()]);
         ingredientList = root.findViewById(R.id.ingredientList);
@@ -279,8 +278,8 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                 String[] item = ingredientList.getItemAtPosition(i).toString().split(" - ");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Add Ingredient to Grocery List?")
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                builder.setTitle(R.string.addingredient)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
@@ -288,7 +287,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                                 dialogInterface.cancel();
                             }
                         });
-                builder.setPositiveButton("Add", new DialogInterface.OnClickListener()
+                builder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
@@ -297,7 +296,7 @@ public class RecipeDialog extends DialogFragment implements GetRecipeTask.AsyncR
                         newUser.addGroceryItem(new Ingredient(item[0], "false"));
                         vm.setUser(newUser);
 
-                        Toast.makeText(getActivity(), "Added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.added, Toast.LENGTH_SHORT).show();
                     }
                 });
                 builder.show();

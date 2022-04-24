@@ -15,6 +15,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import edu.weber.w01311060.recipeapp.db.AppDatabase;
+import edu.weber.w01311060.recipeapp.models.ContextCategory;
 import edu.weber.w01311060.recipeapp.models.RecipeList;
 import edu.weber.w01311060.recipeapp.models.User;
 
@@ -23,9 +25,26 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
     private FragmentManager fm;
     private User user;
     private BottomNavigationView bottomNavigationView;
+    private String[] categories = new String[]{"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        //load database if it is empty
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                int count = AppDatabase.getInstance(getApplicationContext()).getRecipeDao().getCount();
+                if (count <= 0)
+                {
+                    loadRecipes();
+                }
+            }
+        }).start();
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
@@ -39,26 +58,22 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
                 switch (item.getItemId())
                 {
                     case R.id.groceryList:
-                        Log.d("Main", "groceryList");
                         fm.beginTransaction()
                                 .replace(R.id.fragmentContainerView, new GroceryListFragment(), "groceryListFrag")
                                 .commit();
                         return true;
                     case R.id.recipes:
-                        Log.d("Main", "recipes");
                         fm.beginTransaction()
                                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")
                                 .commit();
                         return true;
                     case R.id.favorites:
-                        Log.d("Main", "favorites");
                         RecipeListFragment recipeListFragment = RecipeListFragment.newInstance(true);
                         fm.beginTransaction()
                                 .replace(R.id.fragmentContainerView, recipeListFragment, "favoritesFrag")
                                 .commit();
                         return true;
                     case R.id.account:
-                        Log.d("Main", "account");
                         fm.beginTransaction()
                                 .replace(R.id.fragmentContainerView, new AccountFragment(), "accountFrag")
                                 .commit();
@@ -74,10 +89,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.onL
     public void onLogin(User user)
     {
         this.user = user;
-        Log.d("Login", "user: " + user.getEmail());
         bottomNavigationView.setSelectedItemId(R.id.recipes);
         fm.beginTransaction()
                 .replace(R.id.fragmentContainerView, new RecipeListFragment(), "recipeListFrag")
                 .commit();
+    }
+    private void loadRecipes()
+    {
+        for(int i = 0; i < categories.length; i++)
+        {
+            ContextCategory param = new ContextCategory(getApplicationContext(), categories[i]);
+            GetRecipeListTask task = new GetRecipeListTask();
+            task.execute(param);
+        }
     }
 }

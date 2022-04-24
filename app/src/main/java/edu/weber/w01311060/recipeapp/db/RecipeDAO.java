@@ -29,6 +29,9 @@ public interface RecipeDAO
     @Query("SELECT * FROM Recipe WHERE strMeal LIKE :strMeal")
     LiveData<List<Recipe>> findRecipeByName(String strMeal);
 
+    @Query("SELECT COUNT(*) FROM Recipe")
+    Integer getCount();
+
     @RawQuery(observedEntities = Recipe.class)
     LiveData<List<Recipe>> filterRecipes(SupportSQLiteQuery query);
 

@@ -44,7 +44,6 @@ public class GetRecipeListTask extends AsyncTask<ContextCategory, Integer, Strin
                 case 201:
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     json = reader.readLine();
-                    Log.d("Task", "json: " + json);
                     return json;
                 default:
                     Log.d("Task", "Incorrect status: " + status);

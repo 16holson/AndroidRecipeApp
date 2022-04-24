@@ -147,7 +147,7 @@ public class GroceryListFragment extends Fragment
         initListViewData();
 
         Toolbar toolbar = root.findViewById(R.id.groceryToolbar);
-        toolbar.setTitle("Grocery List");
+        toolbar.setTitle(R.string.grocerylist);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         addBtn = root.findViewById(R.id.addGroceryItem);
@@ -160,14 +160,15 @@ public class GroceryListFragment extends Fragment
                 EditText input = new EditText(getActivity());
                 input.setBackground(null);
                 inputLayout.setPadding(getResources().getDimensionPixelOffset(R.dimen.dp_16), 0, getResources().getDimensionPixelOffset(R.dimen.dp_16), 0);
-                inputLayout.setHelperText("Ingredient");
+                inputLayout.setHelperText(getString(R.string.ingredient));
                 inputLayout.addView(input);
 
+                //Add ingredient to Grocery List
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Add Item")
-                        .setMessage("Please enter an ingredient to add")
+                builder.setTitle(R.string.additem)
+                        .setMessage(R.string.enteringredient)
                         .setView(inputLayout)
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
@@ -175,7 +176,7 @@ public class GroceryListFragment extends Fragment
                                 dialogInterface.cancel();
                             }
                         })
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener()
+                        .setPositiveButton(R.string.add, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
@@ -193,7 +194,6 @@ public class GroceryListFragment extends Fragment
 
     public void initListViewData()
     {
-        Log.d("Grocery", "initListViewData");
         FirebaseDatabase rootNode = FirebaseDatabase.getInstance();;
         DatabaseReference reference = rootNode.getReference("users");
         Query query = reference.child(newUser.getEmail()).child("groceryList");
@@ -203,19 +203,12 @@ public class GroceryListFragment extends Fragment
                 .setLifecycleOwner(getActivity())
                 .build();
 
+        //Adapter for Grocery List, auto updates when Firebase Database changes
         adapter = new FirebaseListAdapter<Ingredient>(options)
         {
             @Override
             protected void populateView(@NonNull View v, @NonNull Ingredient model, int position)
             {
-//                CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
-//                checkedTextView.setText(model.getName());
-//                Log.d("Sync", "setChecked to: " + Boolean.valueOf(model.isActive()));
-//                checkedTextView.setChecked(Boolean.valueOf(model.isActive()));
-//                Log.d("Sync", "isChecked: " + checkedTextView.isChecked());
-//                newUser.updateGroceryItem(model);
-//                vm.setUser(newUser);
-
                 TextView text = v.findViewById(R.id.groceryItem);
                 CheckBox box = v.findViewById(R.id.groceryBox);
                 text.setText(model.getName());
@@ -226,7 +219,6 @@ public class GroceryListFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        Log.d("List", "Clicked listitem");
                         CheckBox checkbox = view.findViewById(R.id.groceryBox);
                         if(checkbox.isChecked())
                         {
@@ -241,34 +233,9 @@ public class GroceryListFragment extends Fragment
                         vm.setUser(newUser);
                     }
                 });
-//                text.setOnClickListener(new View.OnClickListener()
-//                {
-//                    @Override
-//                    public void onClick(View view)
-//                    {
-//                        Log.d("List", "Clicked listitem");
-//                        CheckBox box = view.findViewById(R.id.groceryBox);
-//                        Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(box.isChecked()));
-//                        newUser.updateGroceryItem(newIngredient);
-//                        vm.setUser(newUser);
-//                    }
-//                });
-//                box.setOnClickListener(new View.OnClickListener()
-//                {
-//                    @Override
-//                    public void onClick(View view)
-//                    {
-//                        Log.d("List", "Clicked listitem");
-//                        CheckBox box = view.findViewById(R.id.groceryBox);
-//                        Ingredient newIngredient = new Ingredient(((Ingredient)listView.getItemAtPosition(i)).getName(), String.valueOf(box.isChecked()));
-//                        newUser.updateGroceryItem(newIngredient);
-//                        vm.setUser(newUser);
-//                    }
-//                });
             }
         };
         listView.setAdapter(adapter);
-        Log.d("Sync", "set adapter");
 
     }
 
@@ -291,15 +258,15 @@ public class GroceryListFragment extends Fragment
                 EditText input = new EditText(getActivity());
                 input.setBackground(null);
                 inputLayout.setPadding(getResources().getDimensionPixelOffset(R.dimen.dp_16), 0, getResources().getDimensionPixelOffset(R.dimen.dp_16), 0);
-                inputLayout.setHelperText("Ingredient");
+                inputLayout.setHelperText(getString(R.string.email));
                 inputLayout.addView(input);
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 if(newUser.getSync() == null)
                 {
-                    builder2.setTitle("Sync List")
-                            .setMessage("Enter the email of the user you wish to sync to")
+                    builder2.setTitle(R.string.synclists)
+                            .setMessage(R.string.enteremail)
                             .setView(inputLayout)
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
@@ -307,7 +274,7 @@ public class GroceryListFragment extends Fragment
                                     dialogInterface.cancel();
                                 }
                             })
-                            .setPositiveButton("Sync", new DialogInterface.OnClickListener()
+                            .setPositiveButton(R.string.sync, new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
@@ -316,14 +283,14 @@ public class GroceryListFragment extends Fragment
                                     newUser.setSync(input.getText().toString().replace(".", "").replace("#", "").replace("$", "").trim());
                                     vm.setUser(newUser);
                                     dialogInterface.dismiss();
-                                    Toast.makeText(getActivity(), "Synced", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), R.string.synced, Toast.LENGTH_SHORT).show();
                                 }
                             }).show();
                 }
                 else
                 {
-                    builder2.setTitle("Desync List")
-                            .setMessage("Do you want to desync")
+                    builder2.setTitle(R.string.desynclist)
+                            .setMessage(R.string.confirmdesync)
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -332,7 +299,7 @@ public class GroceryListFragment extends Fragment
                                     dialogInterface.cancel();
                                 }
                             })
-                            .setPositiveButton("Desync", new DialogInterface.OnClickListener()
+                            .setPositiveButton(R.string.desync, new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
@@ -343,7 +310,7 @@ public class GroceryListFragment extends Fragment
                                     newUser.setSync(null);
                                     vm.setUser(newUser);
                                     dialogInterface.dismiss();
-                                    Toast.makeText(getActivity(), "Desynced", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), R.string.desynced, Toast.LENGTH_SHORT).show();
                                 }
                             }).show();
                 }
@@ -352,8 +319,8 @@ public class GroceryListFragment extends Fragment
             case R.id.delete:
                 //pull up dialog asking if they want to delete selected items
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Delete Selected?");
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                builder.setTitle(R.string.deleteselected);
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
@@ -361,25 +328,22 @@ public class GroceryListFragment extends Fragment
                         dialogInterface.dismiss();
                     }
                 });
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
+                builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
                         //delete selected
-                        SparseBooleanArray checked = listView.getCheckedItemPositions();
-                        Log.d("Grocery", "Delete");
-                        for (int j = 0; j < listView.getAdapter().getCount(); j++)
+                        for (int k = 0; k < listView.getCount(); k++)
                         {
-                            Log.d("Grocery", "listViewItem: " + listView.getItemAtPosition(j) + " checked: " + checked.get(j));
-                            if(checked.get(j))
+                            Ingredient item = (Ingredient) listView.getItemAtPosition(k);
+                            if (Boolean.valueOf(item.isActive()))
                             {
-                                Log.d("Grocery", "Item deleted: " + listView.getItemAtPosition(j).toString());
-                                newUser.removeGroceryItem(listView.getItemAtPosition(j).toString());
+                                newUser.removeGroceryItem(item.getName());
+
                             }
                         }
                         vm.setUser(newUser);
-                        initListViewData();
                     }
                 });
                 builder.show();

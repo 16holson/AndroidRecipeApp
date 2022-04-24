@@ -38,4 +38,26 @@
     <string name="unfavorited">Unfavorited</string>
     <string name="addingredient">Add Ingredient to Grocery List?</string>
     <string name="added">Added</string>
+    <string name="username">Username</string>
+    <string name="no_username">no username</string>
+    <string name="no_email">no email</string>
+    <string name="change_password">Change Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="save_password">Save Password</string>
+    <string name="beef">Beef</string>
+    <string name="chicken">Chicken</string>
+    <string name="dessert">Dessert</string>
+    <string name="lamb">Lamb</string>
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="pasta">Pasta</string>
+    <string name="seafood">Seafood</string>
+    <string name="side">Side</string>
+    <string name="starter">Starter</string>
+    <string name="vegan">Vegan</string>
+    <string name="vegetarian">vegetarian</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="goat">Goat</string>
+    <string name="temp">temp</string>
+    <string name="testing123">Testing123</string>
 </resources>

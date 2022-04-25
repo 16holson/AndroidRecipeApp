@@ -173,7 +173,32 @@ public class RecipeViewModel extends ViewModel
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
+                ArrayList<HashMap<String, String>> list = (ArrayList<HashMap<String, String>>) snapshot.child("groceryList").getValue();
                 String sync = (String)snapshot.child("sync").getValue();
+
+                if (list != null)
+                {
+                    ArrayList<Ingredient> ingredients = new ArrayList<>();
+                    for (int i = 0; i < list.size(); i++)
+                    {
+                        String name = "";
+                        String active = "";
+
+                        for (Map.Entry<String, String> entry : list.get(i).entrySet())
+                        {
+                            if (entry.getKey().equals("name"))
+                            {
+                                name = entry.getValue();
+                            }
+                            else
+                            {
+                                active = entry.getValue();
+                            }
+                        }
+                        ingredients.add(new Ingredient(name, active));
+                    }
+                    user.getValue().setGroceryList(ingredients);
+                }
                 if (sync != null)
                 {
                     user.getValue().setSync(sync);

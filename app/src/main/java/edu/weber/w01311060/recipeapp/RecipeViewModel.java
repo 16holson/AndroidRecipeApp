@@ -166,6 +166,26 @@ public class RecipeViewModel extends ViewModel
     }
     public LiveData<User> getUser()
     {
+        FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
+        DatabaseReference reference = rootNode.getReference("users");
+        reference.child(user.getValue().getEmail()).addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                String sync = (String)snapshot.child("sync").getValue();
+                if (sync != null)
+                {
+                    user.getValue().setSync(sync);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error)
+            {
+
+            }
+        });
         return user;
     }
     public void setFavorite(boolean favorite)
